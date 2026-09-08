@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { businessConfig } from './config/business';
 import { BusinessConfig } from './types/business';
 import { normalizeBusinessConfig } from './lib/config-runtime';
+import { validateBusinessConfig } from './engine/config-validation';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
@@ -49,6 +50,11 @@ export default function App() {
   };
 
   useEffect(() => {
+    const validation = validateBusinessConfig(previewBusiness);
+    if (import.meta.env.DEV && !validation.valid) {
+      console.warn('[UMKM Engine] Invalid business config:', validation.issues);
+    }
+
     const root = document.documentElement;
     root.style.setProperty('--color-primary', previewBusiness.theme.primaryColor);
     root.style.setProperty('--color-primary-hover', previewBusiness.theme.primaryHover);
