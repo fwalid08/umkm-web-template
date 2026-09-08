@@ -39,10 +39,10 @@ function heroGradientValue(hero: BusinessConfig['hero']) {
 }
 
 export default function App() {
+  const isStudio = typeof window !== 'undefined' && (window.location.pathname === '/studio' || window.location.pathname.startsWith('/studio/'));
   const [business, setBusiness] = useState<BusinessConfig>(businessConfig);
   const [previewRevision, setPreviewRevision] = useState(0);
   const previewBusiness = normalizeBusinessConfig(business);
-  const studio = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('studio');
 
   const handleBusinessChange = (nextBusiness: BusinessConfig) => {
     setBusiness(nextBusiness);
@@ -50,6 +50,7 @@ export default function App() {
   };
 
   useEffect(() => {
+    if (isStudio) return;
     const validation = validateBusinessConfig(previewBusiness);
     if (import.meta.env.DEV && !validation.valid) console.warn('[UMKM Engine] Invalid business config:', validation.issues);
     const root = document.documentElement;
@@ -73,24 +74,13 @@ export default function App() {
     const font = getFontById(previewBusiness.theme.fontOptionId);
     root.style.setProperty('--font-family', previewBusiness.theme.fontFamily || font.family);
     document.title = previewBusiness.seo?.title || `${previewBusiness.name} - ${previewBusiness.tagline}`;
-  }, [previewBusiness]);
+  }, [previewBusiness, isStudio]);
 
-  if (studio) return <WebsiteStudio onClose={() => { window.history.replaceState({}, '', window.location.pathname); window.location.reload(); }} />;
+  if (isStudio) return <WebsiteStudio onClose={() => { window.location.href = '/'; }} />;
 
-  return (
-    <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{ backgroundColor: previewBusiness.theme.backgroundColor }}>
-      <LoadingScreen business={previewBusiness} />
-      <JsonLdScript business={previewBusiness} />
-      <DevPanel currentBusiness={business} onSelectBusiness={handleBusinessChange} />
-      <Navbar business={previewBusiness} />
-      <main key={previewRevision} className="grow">
-        <Hero business={previewBusiness} />
-        <WebsiteSections business={previewBusiness} />
-      </main>
-      <Footer business={previewBusiness} />
-      <MobileBottomNav business={previewBusiness} />
-      <WhatsAppButton business={previewBusiness} />
-      <ScrollToTop primaryColor={previewBusiness.theme.primaryColor} />
-    </div>
-  );
+  return <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{ backgroundColor: previewBusiness.theme.backgroundColor }}>
+    <LoadingScreen business={previewBusiness}/><JsonLdScript business={previewBusiness}/><DevPanel currentBusiness={business} onSelectBusiness={handleBusinessChange}/>
+    <Navbar business={previewBusiness}/><main key={previewRevision} className="grow"><Hero business={previewBusiness}/><WebsiteSections business={previewBusiness}/></main>
+    <Footer business={previewBusiness}/><MobileBottomNav business={previewBusiness}/><WhatsAppButton business={previewBusiness}/><ScrollToTop primaryColor={previewBusiness.theme.primaryColor}/>
+  </div>;
 }
