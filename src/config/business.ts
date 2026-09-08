@@ -24,27 +24,11 @@ export const businessConfig: BusinessConfig = {
   aboutImageUrl: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=1000&q=80',
   ctaBannerImageUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
 
-  sections: {
-    stats: true, about: true, services: true, pricing: true, whyChooseUs: true,
-    gallery: true, testimonials: true, process: true, faq: true, location: true, cta: true,
-  },
+  sections: { stats: true, about: true, services: true, pricing: true, whyChooseUs: true, gallery: true, testimonials: true, process: true, faq: true, location: true, cta: true },
 
-  // Optional page builder configuration. Omitted sections keep the registry default order.
+  // Page-builder order. Hero stays fixed as the first section; the configured list controls everything after it.
   pageSections: {
-    order: [
-      'hero-placeholder',
-      'services',
-      'pricing',
-      'whyChooseUs',
-      'testimonials',
-      'process',
-      'about',
-      'gallery',
-      'faq',
-      'location',
-      'cta',
-      'stats',
-    ] as never,
+    order: ['services', 'pricing', 'whyChooseUs', 'testimonials', 'process', 'about', 'gallery', 'faq', 'location', 'cta', 'stats'],
     items: {
       stats: { id: 'stats', enabled: true },
       gallery: { id: 'gallery', enabled: true },
