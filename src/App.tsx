@@ -23,6 +23,8 @@ import { DevPanel } from './components/DevPanel';
 import { LoadingScreen } from './components/LoadingScreen';
 import { getFontById } from './config/fonts';
 
+const blurPixels: Record<string,string> = { none:'0px', sm:'2px', md:'4px', lg:'8px' };
+
 export default function App() {
   const [business, setBusiness] = useState<BusinessConfig>(businessConfig);
   useEffect(() => {
@@ -36,6 +38,7 @@ export default function App() {
     root.style.setProperty('--color-text', business.theme.textColor);
     root.style.setProperty('--color-text-muted', business.theme.mutedTextColor);
     root.style.setProperty('--border-radius', business.theme.borderRadius);
+    root.style.setProperty('--hero-background-blur', blurPixels[business.hero?.backgroundBlur || 'none'] || '0px');
     const font = getFontById(business.theme.fontOptionId);
     root.style.setProperty('--font-family', business.theme.fontFamily || font.family);
     document.title = business.seo?.title || `${business.name} - ${business.tagline}`;
