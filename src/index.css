@@ -17,7 +17,9 @@
   body { background-color:var(--color-background); color:var(--color-text); font-family:var(--font-family,'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; overflow-x:hidden; }
 }
 
-#beranda > .absolute.inset-0.overflow-hidden { filter:blur(var(--hero-background-blur,0px)); transform:scale(1.01); transition:filter .25s ease; }
+/* The original Hero component exposes these Tailwind blur classes. Map them to deliberately stronger visual levels. */
+.blur-\\[2px\\]{filter:blur(4px)!important}.blur-\\[4px\\]{filter:blur(12px)!important}.blur-\\[8px\\]{filter:blur(24px)!important}
+#beranda > .absolute.inset-0.overflow-hidden { filter:blur(var(--hero-background-blur,0px)); transform:scale(1.025); transition:filter .25s ease,transform .25s ease; }
 
 ::-webkit-scrollbar { width:8px; }
 ::-webkit-scrollbar-track { background:#f1f5f9; }
