@@ -14,6 +14,7 @@ export type HeroGradientStyle = 'brand-glow' | 'aurora-mesh' | 'sunset-radiant' 
 export type HeroBackgroundMode = 'auto' | 'light' | 'dark';
 export type HeroTextureType = 'dots' | 'grid' | 'mesh' | 'none';
 export type HeroBackgroundType = 'color' | 'image' | 'image-overlay';
+export type HeroBlurLevel = 'none' | 'sm' | 'md' | 'lg';
 export interface HeroCustomGradient { from: string; via?: string; to: string; direction?: 'to-b' | 'to-br' | 'to-r' | 'to-tr' | 'radial'; }
 export interface HeroAmbientOrbsConfig { enabled?: boolean; color1?: string; color2?: string; opacity?: number; blur?: 'sm' | 'md' | 'lg' | 'xl'; }
 export interface HeroStatItem { value: string; label: string; }
@@ -23,9 +24,10 @@ export interface HeroConfig {
   primaryCtaText?: string; primaryCtaUrl?: string; secondaryCtaText?: string; secondaryCtaUrl?: string; ctaNote?: string;
   trustBadgeText?: string; trustPoints?: string[]; showTrustPoints?: boolean; showRatingPill?: boolean; ratingValue?: string; ratingLabel?: string;
   showFloatingStats?: boolean; floatingStats?: HeroStatItem[]; backgroundType?: HeroBackgroundType; backgroundColor?: string; backgroundMode?: HeroBackgroundMode;
+  backgroundBlur?: HeroBlurLevel;
   gradientStyle?: HeroGradientStyle; customGradient?: HeroCustomGradient; ambientOrbs?: HeroAmbientOrbsConfig; texture?: HeroTextureType; textureOpacity?: number;
   showBackgroundImageOverlay?: boolean; backgroundImageUrl?: string; backgroundImageAlt?: string; backgroundImageOpacity?: number;
-  backgroundImageBlur?: 'none' | 'sm' | 'md' | 'lg'; backgroundImagePosition?: string; overlayColor?: string; overlayOpacity?: number; overlayGradient?: boolean;
+  backgroundImageBlur?: HeroBlurLevel; backgroundImagePosition?: string; overlayColor?: string; overlayOpacity?: number; overlayGradient?: boolean;
   minHeight?: 'auto' | 'screen' | 'large'; contentAlign?: 'left' | 'center'; contentMaxWidth?: 'sm' | 'md' | 'lg' | 'xl'; textTheme?: 'auto' | 'light' | 'dark'; accentText?: string;
 }
 export type FontOptionId = 'plus-jakarta' | 'outfit' | 'dm-sans' | 'poppins' | 'inter';
