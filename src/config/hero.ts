@@ -1,194 +1,73 @@
-import { 
-  HeroConfig, 
-  HeroLayoutVariant, 
-  HeroGradientStyle,
-  HeroBackgroundMode,
-  HeroTextureType 
-} from '../types/business';
+import { HeroConfig, HeroGradientStyle, HeroLayoutVariant, HeroBackgroundMode, HeroTextureType, HeroBackgroundType } from '../types/business';
 
-/**
- * 3 Alternatif Pilihan Layout Hero dengan UI/UX Native-Feel:
- * 1. 'split'         : Split High-Conversion - Headline di kiri, media interaktif & trust cards di kanan.
- * 2. 'centered'      : Centered Editorial Showcase - Headline simetris di tengah, panorama showcase kartu lebar.
- * 3. 'card-overlay'  : App-Style Studio Overlay - Desain premium dark/glassmorphic dengan quick-booking widget interaktif.
- */
-export interface HeroLayoutOption {
-  id: HeroLayoutVariant;
-  name: string;
-  subtitle: string;
-  description: string;
-  bestFor: string;
-}
-
+export interface HeroLayoutOption { id: HeroLayoutVariant; name: string; subtitle: string; description: string; bestFor: string; }
 export const heroLayoutOptions: HeroLayoutOption[] = [
-  {
-    id: 'split',
-    name: '1. Split High-Conversion',
-    subtitle: 'Kiri: Headline & CTA, Kanan: Showcase Media & Badges',
-    description: 'Tata letak responsif dua kolom seimbang dengan fokus konversi tinggi, trust checkmarks, dan badge floating rating.',
-    bestFor: 'Bengkel Otomotif, Servis AC, Kontraktor & Jasa Teknis',
-  },
-  {
-    id: 'centered',
-    name: '2. Centered Editorial Showcase',
-    subtitle: 'Tengah: Headline & Social Proof, Bawah: Media Lebar',
-    description: 'Tata letak simetris elegan dengan social proof pill di atas, dual action buttons, dan showcase media panorama berbingkai rapi.',
-    bestFor: 'Laundry Kiloan, Restoran & Cafe, Bakery, Retail',
-  },
-  {
-    id: 'card-overlay',
-    name: '3. App-Style Studio Overlay',
-    subtitle: 'Latar Atmosferik & Quick Booking Sheet Interaktif',
-    description: 'Nuansa aplikasi modern dengan latar visual tersamarkan, kartu headline berkelas, dan sheet booking WhatsApp langsung satu klik.',
-    bestFor: 'Barbershop, Salon & Spa, Studio Foto, Klinik',
-  },
+  { id: 'split', name: '1. Split', subtitle: 'Konten kiri, visual kanan', description: 'Layout dua kolom untuk headline, CTA, trust points, dan foto bisnis.', bestFor: 'Bengkel, jasa teknis, kontraktor, rental' },
+  { id: 'centered', name: '2. Centered', subtitle: 'Headline fokus di tengah', description: 'Komposisi simetris dengan CTA dan visual sebagai fokus utama.', bestFor: 'Cafe, restoran, bakery, retail' },
+  { id: 'background-focus', name: '3. Background Focus', subtitle: 'Foto memenuhi hero', description: 'Background foto menjadi elemen utama dengan overlay warna transparan agar teks tetap terbaca.', bestFor: 'Kuliner, travel, hotel, fotografi' },
+  { id: 'card-overlay', name: '4. Card Overlay', subtitle: 'Konten dalam floating card', description: 'Foto atmosferik di belakang dengan kartu konten premium di atasnya.', bestFor: 'Barbershop, salon, spa, studio' },
+  { id: 'minimal', name: '5. Minimal', subtitle: 'Bersih dan cepat', description: 'Hero ringan dengan fokus pada headline, deskripsi, dan satu-dua CTA.', bestFor: 'Freelancer, jasa profesional, UMKM sederhana' },
 ];
 
-/**
- * Pilihan Gradient Style Modern & Native-Feel
- */
-export interface HeroGradientOption {
-  id: HeroGradientStyle;
-  name: string;
-  description: string;
-  previewColors: string[];
-  suggestedMode: HeroBackgroundMode;
-}
+export interface HeroBackgroundOption { id: HeroBackgroundType; name: string; description: string; }
+export const heroBackgroundOptions: HeroBackgroundOption[] = [
+  { id: 'color', name: 'Solid Color', description: 'Background hanya menggunakan warna.' },
+  { id: 'image', name: 'Full Image', description: 'Background menggunakan foto bisnis secara penuh.' },
+  { id: 'image-overlay', name: 'Image + Transparent Overlay', description: 'Foto samar di belakang dengan lapisan warna transparan yang dapat dikustomisasi.' },
+];
 
+export interface HeroGradientOption { id: HeroGradientStyle; name: string; description: string; previewColors: string[]; suggestedMode: HeroBackgroundMode; }
 export const heroGradientOptions: HeroGradientOption[] = [
-  {
-    id: 'brand-glow',
-    name: 'Brand Glow (Default)',
-    description: 'Pancaran ambient radial elegan mengikuti warna primer dan aksen brand bisnis.',
-    previewColors: ['#EF4444', '#38BDF8', '#FFFFFF'],
-    suggestedMode: 'auto',
-  },
-  {
-    id: 'aurora-mesh',
-    name: 'Aurora Mesh Glow',
-    description: 'Gradasi dinamis modern multi-titik ala aplikasi native Apple / macOS.',
-    previewColors: ['#6366F1', '#06B6D4', '#10B981'],
-    suggestedMode: 'auto',
-  },
-  {
-    id: 'sunset-radiant',
-    name: 'Sunset Radiant',
-    description: 'Nuansa hangat amber, emas, dan copper untuk atmosfer ramah dan bersahabat.',
-    previewColors: ['#F59E0B', '#EF4444', '#78350F'],
-    suggestedMode: 'auto',
-  },
-  {
-    id: 'ocean-depth',
-    name: 'Ocean Depth',
-    description: 'Gradasi sejuk navy, indigo, dan cyan dengan kontras tinggi nan elegan.',
-    previewColors: ['#0F172A', '#0284C7', '#38BDF8'],
-    suggestedMode: 'dark',
-  },
-  {
-    id: 'emerald-nature',
-    name: 'Emerald Nature',
-    description: 'Gradasi segar mint, sage, dan forest green yang menyejukkan mata.',
-    previewColors: ['#064E3B', '#10B981', '#6EE7B7'],
-    suggestedMode: 'auto',
-  },
-  {
-    id: 'dark-slate',
-    name: 'Native Dark Slate',
-    description: 'Kanvas gelap premium (#0B0F19) dengan specular top line dan kartu glassmorphic.',
-    previewColors: ['#0B0F19', '#1E293B', '#334155'],
-    suggestedMode: 'dark',
-  },
-  {
-    id: 'clean-subtle',
-    name: 'Clean Apple Subtle',
-    description: 'Kanvas bersih off-white (#F8FAFC) dengan sapuan gradasi pastel sangat halus.',
-    previewColors: ['#FFFFFF', '#F8FAFC', '#E2E8F0'],
-    suggestedMode: 'light',
-  },
-  {
-    id: 'solid',
-    name: 'Solid + Ambient Orbs',
-    description: 'Warna latar solid murni yang dihiasi dua orbs cahaya ambient bergerak halus.',
-    previewColors: ['#1E293B', '#64748B'],
-    suggestedMode: 'auto',
-  },
-  {
-    id: 'custom',
-    name: 'Custom Gradient (Bebas)',
-    description: 'Tentukan sendiri warna awal (from), tengah (via), akhir (to), dan arah gradasi.',
-    previewColors: ['#4F46E5', '#9333EA', '#EC4899'],
-    suggestedMode: 'auto',
-  },
+  { id: 'brand-glow', name: 'Brand Glow', description: 'Glow mengikuti warna brand.', previewColors: ['#EF4444', '#38BDF8'], suggestedMode: 'auto' },
+  { id: 'aurora-mesh', name: 'Aurora Mesh', description: 'Ambient multi-point modern.', previewColors: ['#6366F1', '#06B6D4', '#10B981'], suggestedMode: 'auto' },
+  { id: 'sunset-radiant', name: 'Sunset Radiant', description: 'Hangat amber dan copper.', previewColors: ['#F59E0B', '#EF4444'], suggestedMode: 'auto' },
+  { id: 'ocean-depth', name: 'Ocean Depth', description: 'Navy dan cyan premium.', previewColors: ['#0F172A', '#0284C7'], suggestedMode: 'dark' },
+  { id: 'emerald-nature', name: 'Emerald Nature', description: 'Fresh green natural.', previewColors: ['#064E3B', '#10B981'], suggestedMode: 'auto' },
+  { id: 'dark-slate', name: 'Dark Slate', description: 'Obsidian/slate premium.', previewColors: ['#0B0F19', '#334155'], suggestedMode: 'dark' },
+  { id: 'clean-subtle', name: 'Clean Subtle', description: 'Off-white minimal.', previewColors: ['#FFFFFF', '#E2E8F0'], suggestedMode: 'light' },
+  { id: 'solid', name: 'Solid + Orbs', description: 'Solid color dengan ambient orbs.', previewColors: ['#1E293B', '#64748B'], suggestedMode: 'auto' },
+  { id: 'custom', name: 'Custom', description: 'Warna dan arah bebas.', previewColors: ['#4F46E5', '#9333EA', '#EC4899'], suggestedMode: 'auto' },
 ];
 
-/**
- * Preset Warna Background Populer (Native Feel)
- */
-export interface HeroBackgroundPreset {
-  name: string;
-  color: string;
-  isDark: boolean;
-}
-
+export interface HeroBackgroundPreset { name: string; color: string; isDark: boolean; }
 export const heroBackgroundPresets: HeroBackgroundPreset[] = [
-  { name: 'Apple Slate', color: '#F8FAFC', isDark: false },
-  { name: 'Crisp White', color: '#FFFFFF', isDark: false },
-  { name: 'Warm Stone', color: '#F5F5F4', isDark: false },
   { name: 'Obsidian Dark', color: '#0B0F19', isDark: true },
   { name: 'Midnight Slate', color: '#0F172A', isDark: true },
   { name: 'Deep Navy', color: '#0A1128', isDark: true },
   { name: 'Zinc Studio', color: '#18181B', isDark: true },
+  { name: 'Apple Slate', color: '#F8FAFC', isDark: false },
+  { name: 'Crisp White', color: '#FFFFFF', isDark: false },
+  { name: 'Warm Stone', color: '#F5F5F4', isDark: false },
 ];
 
-/**
- * Konfigurasi Hero Default
- * Mengatur pilihan layout, canvas background color, gradient modern, dan ambient glow.
- */
+export const heroTextureOptions: { id: HeroTextureType; name: string }[] = [
+  { id: 'none', name: 'None' }, { id: 'dots', name: 'Dots' }, { id: 'grid', name: 'Grid' }, { id: 'mesh', name: 'Mesh' },
+];
+
+/** Default: dark + background image + transparent color overlay. */
 export const heroConfig: HeroConfig = {
-  // Pilihan layout: 'split' | 'centered' | 'card-overlay'
   layoutVariant: 'split',
-
-  // Warna latar canvas (bisa disetel heksadesimal apa saja, e.g. '#0F172A', '#F8FAFC')
-  backgroundColor: '#F8FAFC',
-  backgroundMode: 'auto', // 'auto' | 'light' | 'dark'
-
-  // Gradient modern: 'brand-glow' | 'aurora-mesh' | 'sunset-radiant' | 'ocean-depth' | 'emerald-nature' | 'dark-slate' | 'clean-subtle' | 'solid' | 'custom'
-  gradientStyle: 'brand-glow',
-
-  // Custom gradient (digunakan bila gradientStyle === 'custom')
-  customGradient: {
-    from: '#F8FAFC',
-    via: '#F1F5F9',
-    to: '#E2E8F0',
-    direction: 'to-b',
-  },
-
-  // Ambient Radial Glow Orbs (Native lighting)
-  ambientOrbs: {
-    enabled: true,
-    opacity: 0.18,
-    blur: 'xl',
-  },
-
-  // Tekstur halus kanvas: 'dots' | 'grid' | 'mesh' | 'none'
-  texture: 'dots',
-  textureOpacity: 0.035,
-
-  // Pilihan background gambar yang tersamarkan (Disguised / Subtle background image)
+  backgroundType: 'image-overlay',
+  backgroundColor: '#0B0F19',
+  backgroundMode: 'dark',
+  gradientStyle: 'dark-slate',
+  customGradient: { from: '#0B0F19', via: '#0F172A', to: '#0B0F19', direction: 'to-b' },
+  ambientOrbs: { enabled: true, opacity: 0.16, blur: 'xl' },
+  texture: 'none',
+  textureOpacity: 0.03,
   showBackgroundImageOverlay: true,
-  backgroundImageUrl: '', // Kosongkan untuk memakai heroImageUrl otomatis
-  backgroundImageOpacity: 0.12, // 0.05 - 0.35 agar tersamarkan lembut & teks tetap terbaca 100%
-  backgroundImageBlur: 'sm', // 'none' | 'sm' | 'md' | 'lg'
-
-  // Kustomisasi elemen pendukung
+  backgroundImageUrl: '',
+  backgroundImageOpacity: 0.34,
+  backgroundImageBlur: 'sm',
+  backgroundImagePosition: 'center',
+  overlayColor: '#0B0F19',
+  overlayOpacity: 0.68,
+  overlayGradient: true,
+  minHeight: 'large',
+  contentAlign: 'left',
   badgeText: 'Spesialis Servis Injeksi & Matic Bergaransi',
   trustBadgeText: '⭐ 4.9/5 dari 1,200+ Pelanggan Puas',
-  trustPoints: [
-    'Teknisi Berpengalaman & Terlatih',
-    '100% Suku Cadang Asli & Bergaransi',
-    'Estimasi Biaya Transparan Tanpa Siluman',
-    'Prioritas Antrean Booking WhatsApp',
-  ],
+  trustPoints: ['Teknisi Berpengalaman & Terlatih', '100% Suku Cadang Asli & Bergaransi', 'Estimasi Biaya Transparan Tanpa Siluman', 'Prioritas Antrean Booking WhatsApp'],
   showFloatingStats: true,
   showRatingPill: true,
 };
