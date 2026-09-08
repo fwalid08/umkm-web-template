@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { businessConfig } from './config/business';
 import { BusinessConfig } from './types/business';
 import { normalizeBusinessConfig } from './lib/config-runtime';
-import { validateBusinessConfig } from './engine/config-validation';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
@@ -10,7 +9,6 @@ import { WhatsAppButton } from './components/WhatsAppButton';
 import { ScrollToTop } from './components/ScrollToTop';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { JsonLdScript } from './components/JsonLdScript';
-import { DevPanel } from './components/DevPanel';
 import { LoadingScreen } from './components/LoadingScreen';
 import { getFontById } from './config/fonts';
 import { WebsiteSections } from './engine/WebsiteSections';
@@ -40,19 +38,10 @@ function heroGradientValue(hero: BusinessConfig['hero']) {
 
 export default function App() {
   const isStudio = typeof window !== 'undefined' && (window.location.pathname === '/studio' || window.location.pathname.startsWith('/studio/'));
-  const [business, setBusiness] = useState<BusinessConfig>(businessConfig);
-  const [previewRevision, setPreviewRevision] = useState(0);
-  const previewBusiness = normalizeBusinessConfig(business);
-
-  const handleBusinessChange = (nextBusiness: BusinessConfig) => {
-    setBusiness(nextBusiness);
-    if (nextBusiness.id !== business.id) setPreviewRevision(revision => revision + 1);
-  };
+  const previewBusiness = normalizeBusinessConfig(businessConfig);
 
   useEffect(() => {
     if (isStudio) return;
-    const validation = validateBusinessConfig(previewBusiness);
-    if (import.meta.env.DEV && !validation.valid) console.warn('[UMKM Engine] Invalid business config:', validation.issues);
     const root = document.documentElement;
     root.style.setProperty('--color-primary', previewBusiness.theme.primaryColor);
     root.style.setProperty('--color-primary-hover', previewBusiness.theme.primaryHover);
@@ -79,8 +68,8 @@ export default function App() {
   if (isStudio) return <WebsiteStudio onClose={() => { window.location.href = '/'; }} />;
 
   return <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{ backgroundColor: previewBusiness.theme.backgroundColor }}>
-    <LoadingScreen business={previewBusiness}/><JsonLdScript business={previewBusiness}/><DevPanel currentBusiness={business} onSelectBusiness={handleBusinessChange}/>
-    <Navbar business={previewBusiness}/><main key={previewRevision} className="grow"><Hero business={previewBusiness}/><WebsiteSections business={previewBusiness}/></main>
+    <LoadingScreen business={previewBusiness}/><JsonLdScript business={previewBusiness}/>
+    <Navbar business={previewBusiness}/><main className="grow"><Hero business={previewBusiness}/><WebsiteSections business={previewBusiness}/></main>
     <Footer business={previewBusiness}/><MobileBottomNav business={previewBusiness}/><WhatsAppButton business={previewBusiness}/><ScrollToTop primaryColor={previewBusiness.theme.primaryColor}/>
   </div>;
 }
