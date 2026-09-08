@@ -1,244 +1,59 @@
 import React, { useMemo, useState } from 'react';
-import { BusinessConfig } from '../types/business';
+import { BusinessConfig, HeroConfig, HeroLayoutVariant } from '../types/business';
 import { templateList } from '../config/templates';
 import { fontOptions } from '../config/fonts';
+import { heroLayoutOptions, heroBackgroundOptions, heroGradientOptions, heroBackgroundPresets, heroTextureOptions, heroVariantPresets } from '../config/hero';
 import { DynamicIcon } from '../lib/icons';
-import {
-  Settings2,
-  X,
-  Check,
-  Download,
-  Copy,
-  Sparkles,
-  Palette,
-  FileText,
-  Menu,
-  Search,
-  BriefcaseBusiness,
-  Image as ImageIcon,
-  MapPin,
-  MessageCircle,
-  HelpCircle,
-  LayoutTemplate,
-  ChevronRight,
-  Plus,
-  Trash2,
-  RotateCcw,
-} from 'lucide-react';
+import { Settings2, X, Check, Download, Copy, Sparkles, Palette, FileText, Menu, Search, BriefcaseBusiness, Image as ImageIcon, MapPin, MessageCircle, HelpCircle, LayoutTemplate, Plus, Trash2, RotateCcw } from 'lucide-react';
 
-interface DevPanelProps {
-  currentBusiness: BusinessConfig;
-  onSelectBusiness: (business: BusinessConfig) => void;
-}
-
-type ConfigTabId = 'business' | 'theme' | 'navigation' | 'hero' | 'seo' | 'services' | 'testimonials' | 'gallery' | 'faq' | 'location' | 'cta' | 'footer';
+interface DevPanelProps { currentBusiness: BusinessConfig; onSelectBusiness: (business: BusinessConfig) => void; }
+type Tab = 'business'|'theme'|'navigation'|'hero'|'seo'|'services'|'testimonials'|'gallery'|'faq'|'location'|'cta'|'footer';
 type AnyRecord = Record<string, any>;
+const groups = [{title:'Website & Brand',items:[['business','Business & Content',BriefcaseBusiness],['theme','Theme & Style',Palette],['navigation','Navigation',Menu],['hero','Hero',LayoutTemplate],['seo','SEO',Search]]},{title:'Sections & Content',items:[['services','Services & Pricing',BriefcaseBusiness],['testimonials','Testimonials',MessageCircle],['gallery','Gallery',ImageIcon],['faq','FAQ',HelpCircle],['location','Location',MapPin],['cta','CTA',MessageCircle],['footer','Footer',FileText]]}] as const;
+const configKeys: Record<Exclude<Tab,'business'>,keyof BusinessConfig> = {theme:'theme',navigation:'navigation',hero:'hero',seo:'seo',services:'services',testimonials:'testimonials',gallery:'gallery',faq:'faqs',location:'locationSection',cta:'ctaSection',footer:'footerSection'};
+const businessFields=['name','industry','tagline','heroHeadline','heroDescription','primaryCtaText','secondaryCtaText','heroImageUrl','aboutImageUrl','ctaBannerImageUrl','contact','aboutText','statistics','whyChooseUs','process','openingHours','socialLinks','sections'];
+const labels:Record<string,string>={business:'Business & Content',theme:'Theme & Style',navigation:'Navigation',hero:'Hero',seo:'SEO',services:'Services & Pricing',testimonials:'Testimonials',gallery:'Gallery',faq:'FAQ',location:'Location',cta:'CTA',footer:'Footer'};
+function labelize(s:string){return s.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/[_-]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
+function isColor(v:any){return typeof v==='string' && /^#[0-9a-f]{3,8}$/i.test(v);}
+function isUrl(k:string){return /url|image|logo|favicon/i.test(k);}
+function isLong(k:string,v:string){return v.length>90||/description|text|content|message|comment|answer|address/i.test(k);}
+function setPath(root:any,path:string[],value:any):any{if(!path.length)return value;const c=Array.isArray(root)?[...root]:{...(root||{})};const [h,...r]=path;c[h]=r.length?setPath(c[h],r,value):value;return c;}
+function delPath(root:any,path:string[]):any{if(!path.length)return root;const c=Array.isArray(root)?[...root]:{...(root||{})};const[h,...r]=path;if(!r.length){Array.isArray(c)?c.splice(Number(h),1):delete c[h];return c;}c[h]=delPath(c[h],r);return c;}
+function emptyLike(v:any){if(typeof v==='string')return '';if(typeof v==='number')return 0;if(typeof v==='boolean')return false;if(Array.isArray(v))return [];if(v&&typeof v==='object')return Object.fromEntries(Object.entries(v).map(([k,x])=>[k,emptyLike(x)]));return '';}
 
-const tabGroups: Array<{ title: string; items: Array<{ id: ConfigTabId; label: string; icon: React.ElementType }> }> = [
-  {
-    title: 'Website & Brand',
-    items: [
-      { id: 'business', label: 'Business & Content', icon: BriefcaseBusiness },
-      { id: 'theme', label: 'Theme & Style', icon: Palette },
-      { id: 'navigation', label: 'Navigation', icon: Menu },
-      { id: 'hero', label: 'Hero', icon: LayoutTemplate },
-      { id: 'seo', label: 'SEO', icon: Search },
-    ],
-  },
-  {
-    title: 'Sections & Content',
-    items: [
-      { id: 'services', label: 'Services & Pricing', icon: BriefcaseBusiness },
-      { id: 'testimonials', label: 'Testimonials', icon: MessageCircle },
-      { id: 'gallery', label: 'Gallery', icon: ImageIcon },
-      { id: 'faq', label: 'FAQ', icon: HelpCircle },
-      { id: 'location', label: 'Location', icon: MapPin },
-      { id: 'cta', label: 'CTA', icon: MessageCircle },
-      { id: 'footer', label: 'Footer', icon: FileText },
-    ],
-  },
-];
-
-const tabLabels: Record<ConfigTabId, string> = {
-  business: 'Business & Content', theme: 'Theme & Style', navigation: 'Navigation', hero: 'Hero', seo: 'SEO', services: 'Services & Pricing', testimonials: 'Testimonials', gallery: 'Gallery', faq: 'FAQ', location: 'Location', cta: 'CTA', footer: 'Footer',
-};
-
-const configKeys: Record<ConfigTabId, keyof BusinessConfig | null> = {
-  business: null, theme: 'theme', navigation: 'navigation', hero: 'hero', seo: 'seo', services: 'services', testimonials: 'testimonials', gallery: 'gallery', faq: 'faqs', location: 'locationSection', cta: 'ctaSection', footer: 'footerSection',
-};
-
-const businessFields = ['id', 'name', 'industry', 'tagline', 'heroHeadline', 'heroDescription', 'primaryCtaText', 'secondaryCtaText', 'heroImageUrl', 'aboutImageUrl', 'ctaBannerImageUrl', 'contact', 'aboutText', 'statistics', 'whyChooseUs', 'process', 'openingHours', 'socialLinks', 'sections'];
-const hiddenKeys = new Set(['id']);
-
-function labelize(value: string) {
-  return value.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+function Field({label,value,path,onChange,onDelete,depth=0}:{label:string;value:any;path:string[];onChange:(p:string[],v:any)=>void;onDelete?:(p:string[])=>void;depth?:number}){
+  if(Array.isArray(value))return <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5"><div className="mb-2 flex items-center justify-between"><b className="text-[10px] text-slate-700">{labelize(label)}</b><button type="button" onClick={()=>onChange(path,[...value,emptyLike(value[0])])} className="rounded-lg border bg-white px-2 py-1 text-[9px] font-bold"><Plus className="mr-1 inline h-3 w-3"/>Tambah</button></div><div className="space-y-2">{value.map((item,i)=><div key={i} className="rounded-lg border bg-white p-2"><div className="mb-1 flex justify-between"><span className="text-[9px] uppercase text-slate-400">Item {i+1}</span><button type="button" onClick={()=>onDelete?.([...path,String(i)])} className="text-slate-400 hover:text-red-600"><Trash2 className="h-3 w-3"/></button></div><Field label={typeof item==='object'?label:`${label} ${i+1}`} value={item} path={[...path,String(i)]} onChange={onChange} onDelete={onDelete} depth={depth+1}/></div>)}</div></div>;
+  if(value&&typeof value==='object')return <div className={depth?'border-l pl-3 space-y-2':'space-y-2'}><b className="block text-[10px] text-slate-700">{labelize(label)}</b>{Object.entries(value).map(([k,v])=><Field key={k} label={k} value={v} path={[...path,k]} onChange={onChange} onDelete={onDelete} depth={depth+1}/>)}</div>;
+  const sv=value==null?'':String(value);
+  if(typeof value==='boolean')return <label className="flex items-center justify-between rounded-lg border bg-white px-2.5 py-2"><span className="text-[10px] font-semibold">{labelize(label)}</span><button type="button" onClick={()=>onChange(path,!value)} className={`h-5 w-9 rounded-full ${value?'bg-slate-900':'bg-slate-200'}`}><span className={`block h-4 w-4 rounded-full bg-white transition ${value?'translate-x-4':'translate-x-0.5'}`}/></button></label>;
+  if(isColor(value))return <label className="block"><span className="text-[9px] font-bold text-slate-500">{labelize(label)}</span><div className="mt-1 flex gap-2"><input type="color" value={sv} onChange={e=>onChange(path,e.target.value)} className="h-8 w-10 rounded border"/><input value={sv} onChange={e=>onChange(path,e.target.value)} className="min-w-0 flex-1 rounded-lg border px-2 py-1.5 font-mono text-[10px]"/></div></label>;
+  if(typeof value==='number')return <label className="block"><span className="text-[9px] font-bold text-slate-500">{labelize(label)}</span><input type="number" value={value} onChange={e=>onChange(path,Number(e.target.value))} className="mt-1 w-full rounded-lg border px-2.5 py-2 text-[10px]"/></label>;
+  if(isUrl(label))return <label className="block"><span className="text-[9px] font-bold text-slate-500">{labelize(label)}</span><input type="url" value={sv} onChange={e=>onChange(path,e.target.value)} placeholder="https://..." className="mt-1 w-full rounded-lg border px-2.5 py-2 text-[10px]"/></label>;
+  if(isLong(label,sv))return <label className="block"><span className="text-[9px] font-bold text-slate-500">{labelize(label)}</span><textarea value={sv} onChange={e=>onChange(path,e.target.value)} rows={3} className="mt-1 w-full rounded-lg border px-2.5 py-2 text-[10px]"/></label>;
+  return <label className="block"><span className="text-[9px] font-bold text-slate-500">{labelize(label)}</span><input value={sv} onChange={e=>onChange(path,e.target.value)} className="mt-1 w-full rounded-lg border px-2.5 py-2 text-[10px]"/></label>;
 }
 
-function isColor(value: unknown) {
-  return typeof value === 'string' && (/^#[0-9a-f]{6}$/i.test(value) || /^#[0-9a-f]{3}$/i.test(value));
+function HeroEditor({hero,onChange}:{hero:HeroConfig;onChange:(h:HeroConfig)=>void}){
+ const patch=(p:Partial<HeroConfig>)=>onChange({...hero,...p});
+ const preset=(id:HeroLayoutVariant)=>patch({...heroVariantPresets[id],layoutVariant:id});
+ return <div className="space-y-4">
+  <section><h4 className="mb-2 text-[11px] font-bold">10 Varian Hero</h4><div className="grid gap-2">{heroLayoutOptions.map(o=><button key={o.id} type="button" onClick={()=>preset(o.id)} className={`rounded-xl border p-2.5 text-left ${hero.layoutVariant===o.id?'border-sky-600 bg-sky-50 ring-1 ring-sky-500':'border-slate-200 bg-white'}`}><div className="flex justify-between"><b className="text-[10px]">{o.name}</b>{hero.layoutVariant===o.id&&<Check className="h-3.5 w-3.5 text-sky-600"/>}</div><p className="mt-1 text-[9px] text-slate-500">{o.subtitle} · {o.bestFor}</p></button>)}</div></section>
+  <section className="border-t pt-3"><h4 className="mb-2 text-[11px] font-bold">Copywriting & CTA</h4><div className="space-y-2"><Field label="Eyebrow Text" value={hero.eyebrowText||''} path={['eyebrowText']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Badge Text" value={hero.badgeText||''} path={['badgeText']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Headline" value={hero.headline||''} path={['headline']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Description" value={hero.description||''} path={['description']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Primary CTA Text" value={hero.primaryCtaText||''} path={['primaryCtaText']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Primary CTA URL" value={hero.primaryCtaUrl||''} path={['primaryCtaUrl']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Secondary CTA Text" value={hero.secondaryCtaText||''} path={['secondaryCtaText']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Secondary CTA URL" value={hero.secondaryCtaUrl||''} path={['secondaryCtaUrl']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="CTA Note" value={hero.ctaNote||''} path={['ctaNote']} onChange={(p,v)=>patch(setPath(hero,p,v))}/></div></section>
+  <section className="border-t pt-3"><h4 className="mb-2 text-[11px] font-bold">Trust & Social Proof</h4><div className="space-y-2"><Field label="Trust Badge Text" value={hero.trustBadgeText||''} path={['trustBadgeText']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Trust Points" value={hero.trustPoints||[]} path={['trustPoints']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Rating Value" value={hero.ratingValue||''} path={['ratingValue']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Rating Label" value={hero.ratingLabel||''} path={['ratingLabel']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Show Trust Points" value={hero.showTrustPoints??true} path={['showTrustPoints']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Show Rating Pill" value={hero.showRatingPill??true} path={['showRatingPill']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Show Floating Stats" value={hero.showFloatingStats??false} path={['showFloatingStats']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Floating Stats" value={hero.floatingStats||[]} path={['floatingStats']} onChange={(p,v)=>patch(setPath(hero,p,v))}/></div></section>
+  <section className="border-t pt-3"><h4 className="mb-2 text-[11px] font-bold">Background & Contrast</h4><div className="grid grid-cols-3 gap-1.5">{heroBackgroundOptions.map(o=><button key={o.id} type="button" onClick={()=>patch({backgroundType:o.id})} className={`rounded-lg border p-2 text-[9px] font-bold ${hero.backgroundType===o.id?'border-violet-600 bg-violet-50':'bg-white'}`}>{o.name}</button>)}</div><div className="mt-2 space-y-2"><Field label="Background Color" value={hero.backgroundColor||'#FFFFFF'} path={['backgroundColor']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Background Image URL" value={hero.backgroundImageUrl||''} path={['backgroundImageUrl']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Background Image Alt" value={hero.backgroundImageAlt||''} path={['backgroundImageAlt']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Background Image Opacity" value={hero.backgroundImageOpacity??.34} path={['backgroundImageOpacity']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Overlay Color" value={hero.overlayColor||'#0B0F19'} path={['overlayColor']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Overlay Opacity" value={hero.overlayOpacity??.68} path={['overlayOpacity']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Overlay Gradient" value={hero.overlayGradient??true} path={['overlayGradient']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Text Theme" value={hero.textTheme||'auto'} path={['textTheme']} onChange={(p,v)=>patch(setPath(hero,p,v))}/></div></section>
+  <section className="border-t pt-3"><h4 className="mb-2 text-[11px] font-bold">Gradient, Texture & Layout</h4><div className="grid grid-cols-2 gap-1.5">{heroGradientOptions.map(o=><button key={o.id} type="button" onClick={()=>patch({gradientStyle:o.id,backgroundMode:o.suggestedMode})} className={`rounded-lg border p-2 text-left text-[9px] font-bold ${hero.gradientStyle===o.id?'border-amber-500 bg-amber-50':'bg-white'}`}><span className="mb-1 block h-2 rounded" style={{background:`linear-gradient(90deg,${o.previewColors.join(',')})`}}/>{o.name}</button>)}</div><div className="mt-2 space-y-2"><Field label="Background Mode" value={hero.backgroundMode||'auto'} path={['backgroundMode']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Texture" value={hero.texture||'none'} path={['texture']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Texture Opacity" value={hero.textureOpacity??.04} path={['textureOpacity']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Content Align" value={hero.contentAlign||'left'} path={['contentAlign']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Content Max Width" value={hero.contentMaxWidth||'lg'} path={['contentMaxWidth']} onChange={(p,v)=>patch(setPath(hero,p,v))}/><Field label="Min Height" value={hero.minHeight||'large'} path={['minHeight']} onChange={(p,v)=>patch(setPath(hero,p,v))}/></div></section>
+  <section className="border-t pt-3"><h4 className="mb-2 text-[11px] font-bold">Quick Background Presets</h4><div className="grid grid-cols-2 gap-1.5">{heroBackgroundPresets.map(p=><button key={p.name} type="button" onClick={()=>patch({backgroundColor:p.color,backgroundMode:p.isDark?'dark':'light',textTheme:p.isDark?'light':'dark',overlayColor:p.isDark?p.color:'#FFFFFF'})} className="rounded-lg border bg-white p-2 text-left text-[9px] font-semibold"><span className="mr-2 inline-block h-4 w-4 rounded-full border align-middle" style={{backgroundColor:p.color}}/>{p.name}</button>)}</div></section>
+ </div>;
 }
 
-function isUrlKey(key: string) {
-  return /url|image|logo|favicon/i.test(key);
-}
-
-function isLongText(key: string, value: string) {
-  return value.length > 90 || /description|text|content|message|bio|address/i.test(key);
-}
-
-function updateAtPath(root: any, path: string[], value: any) {
-  if (!path.length) return value;
-  const clone = Array.isArray(root) ? [...root] : { ...(root || {}) };
-  const [head, ...rest] = path;
-  clone[head] = rest.length ? updateAtPath(clone[head], rest, value) : value;
-  return clone;
-}
-
-function deleteAtPath(root: any, path: string[]) {
-  if (!path.length) return root;
-  const clone = Array.isArray(root) ? [...root] : { ...(root || {}) };
-  const [head, ...rest] = path;
-  if (!rest.length) {
-    if (Array.isArray(clone)) clone.splice(Number(head), 1);
-    else delete clone[head];
-    return clone;
-  }
-  clone[head] = deleteAtPath(clone[head], rest);
-  return clone;
-}
-
-function defaultArrayItem(value: any) {
-  if (typeof value === 'string') return '';
-  if (typeof value === 'number') return 0;
-  if (typeof value === 'boolean') return false;
-  if (Array.isArray(value)) return [];
-  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, defaultArrayItem(item)]));
-  return '';
-}
-
-function ConfigField({ label, value, path, onChange, onDelete, depth = 0 }: { label: string; value: any; path: string[]; onChange: (path: string[], value: any) => void; onDelete?: (path: string[]) => void; depth?: number }) {
-  const fieldKey = path[path.length - 1] || label;
-
-  if (value && typeof value === 'object' && !Array.isArray(value)) {
-    return (
-      <div className={`${depth > 0 ? 'ml-1 border-l border-slate-200 pl-3' : ''} space-y-2`}>
-        <div className="flex items-center justify-between pt-1"><div><p className="text-[11px] font-bold text-slate-800">{labelize(label)}</p>{depth === 0 && <p className="text-[9px] text-slate-400">Nested configuration</p>}</div></div>
-        <div className="space-y-2">{Object.entries(value).map(([key, child]) => <ConfigField key={key} label={key} value={child} path={[...path, key]} onChange={onChange} onDelete={onDelete} depth={depth + 1} />)}</div>
-      </div>
-    );
-  }
-
-  if (Array.isArray(value)) {
-    return (
-      <div className={`${depth > 0 ? 'ml-1 border-l border-slate-200 pl-3' : ''} rounded-xl border border-slate-200 bg-slate-50/70 p-2.5`}>
-        <div className="mb-2 flex items-center justify-between"><div><p className="text-[11px] font-bold text-slate-800">{labelize(label)}</p><p className="text-[9px] text-slate-400">{value.length} item</p></div><button type="button" onClick={() => onChange(path, [...value, defaultArrayItem(value[0])])} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-bold text-slate-600 hover:bg-slate-100"><Plus className="h-3 w-3" /> Tambah</button></div>
-        <div className="space-y-2">{value.map((item, index) => <div key={`${path.join('.')}-${index}`} className="rounded-lg border border-slate-200 bg-white p-2"><div className="mb-2 flex items-center justify-between"><span className="text-[9px] font-bold uppercase tracking-wide text-slate-400">Item {index + 1}</span><button type="button" onClick={() => onDelete?.([...path, String(index)])} className="rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-600"><Trash2 className="h-3 w-3" /></button></div><ConfigField label={typeof item === 'object' && item !== null ? label : `${label} ${index + 1}`} value={item} path={[...path, String(index)]} onChange={onChange} onDelete={onDelete} depth={depth + 1} /></div>)}</div>
-      </div>
-    );
-  }
-
-  const stringValue = value == null ? '' : String(value);
-
-  if (typeof value === 'boolean') {
-    return <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-2.5 py-2"><span className="text-[10px] font-semibold text-slate-700">{labelize(label)}</span><button type="button" onClick={() => onChange(path, !value)} className={`relative h-5 w-9 rounded-full transition ${value ? 'bg-slate-900' : 'bg-slate-200'}`} aria-pressed={value}><span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition ${value ? 'left-[18px]' : 'left-0.5'}`} /></button></label>;
-  }
-
-  if (isColor(value)) {
-    return <label className="block rounded-lg border border-slate-200 bg-white p-2"><span className="mb-1 block text-[9px] font-bold text-slate-500">{labelize(label)}</span><div className="flex items-center gap-2"><input type="color" value={stringValue} onChange={(event) => onChange(path, event.target.value)} className="h-8 w-10 cursor-pointer rounded border-0 p-0" /><input value={stringValue} onChange={(event) => onChange(path, event.target.value)} className="min-w-0 flex-1 rounded-md border border-slate-200 px-2 py-1.5 font-mono text-[10px] outline-none focus:border-slate-500" /></div></label>;
-  }
-
-  if (typeof value === 'number') {
-    return <label className="block"><span className="mb-1 block text-[9px] font-bold text-slate-500">{labelize(label)}</span><input type="number" value={value} onChange={(event) => onChange(path, Number(event.target.value))} className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[10px] outline-none focus:border-slate-500" /></label>;
-  }
-
-  if (typeof value === 'string' && isUrlKey(fieldKey)) {
-    return <label className="block"><span className="mb-1 block text-[9px] font-bold text-slate-500">{labelize(label)}</span><input type="url" value={stringValue} onChange={(event) => onChange(path, event.target.value)} placeholder="https://..." className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[10px] outline-none focus:border-slate-500" /></label>;
-  }
-
-  if (typeof value === 'string' && isLongText(fieldKey, stringValue)) {
-    return <label className="block"><span className="mb-1 block text-[9px] font-bold text-slate-500">{labelize(label)}</span><textarea value={stringValue} onChange={(event) => onChange(path, event.target.value)} rows={3} className="w-full resize-y rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[10px] leading-relaxed outline-none focus:border-slate-500" /></label>;
-  }
-
-  return <label className="block"><span className="mb-1 block text-[9px] font-bold text-slate-500">{labelize(label)}</span><input value={stringValue} onChange={(event) => onChange(path, event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[10px] outline-none focus:border-slate-500" /></label>;
-}
-
-export const DevPanel: React.FC<DevPanelProps> = ({ currentBusiness, onSelectBusiness }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<ConfigTabId>('business');
-  const [message, setMessage] = useState('');
-  const [activeGroup, setActiveGroup] = useState('Website & Brand');
-
-  const flash = (text: string) => { setMessage(text); window.setTimeout(() => setMessage(''), 1800); };
-  const downloadFile = (filename: string, content: string, type = 'text/plain') => { const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; anchor.click(); URL.revokeObjectURL(url); };
-
-  const handleChange = (path: string[], value: any) => {
-    if (path[0] === 'business') { onSelectBusiness(updateAtPath(currentBusiness, path.slice(1), value)); return; }
-    const key = configKeys[activeTab];
-    if (!key) return;
-    onSelectBusiness({ ...currentBusiness, [key]: updateAtPath((currentBusiness as AnyRecord)[key], path, value) });
-  };
-
-  const handleDelete = (path: string[]) => {
-    if (path[0] === 'business') { onSelectBusiness(deleteAtPath(currentBusiness, path.slice(1))); return; }
-    const key = configKeys[activeTab];
-    if (!key) return;
-    onSelectBusiness({ ...currentBusiness, [key]: deleteAtPath((currentBusiness as AnyRecord)[key], path) });
-  };
-
-  const activeConfig = useMemo(() => {
-    if (activeTab === 'business') return Object.fromEntries(businessFields.filter((field) => field in currentBusiness).map((field) => [field, (currentBusiness as AnyRecord)[field]]));
-    const key = configKeys[activeTab];
-    return key ? (currentBusiness as AnyRecord)[key] : {};
-  }, [activeTab, currentBusiness]);
-
-  const generateAllConfig = () => {
-    const file = `import { BusinessConfig } from '../types/business';\n\nexport const businessConfig: BusinessConfig = ${JSON.stringify(currentBusiness, null, 2)};\n\nexport default businessConfig;\n`;
-    downloadFile(`${currentBusiness.id}-business.config.ts`, file, 'text/typescript');
-    flash('Full config berhasil dibuat');
-  };
-
-  const generateSectionConfig = () => {
-    const key = configKeys[activeTab];
-    const value = key ? (currentBusiness as AnyRecord)[key] : activeConfig;
-    const file = `export const ${activeTab}Config = ${JSON.stringify(value, null, 2)};\n`;
-    downloadFile(`${activeTab}.config.ts`, file, 'text/typescript');
-    flash(`${tabLabels[activeTab]} berhasil diekspor`);
-  };
-
-  const copyCurrentJson = async () => { await navigator.clipboard.writeText(JSON.stringify(activeConfig, null, 2)); flash('JSON config tersalin'); };
-  const resetCurrent = () => { const template = templateList.find((item) => item.template.id === currentBusiness.id)?.template; if (template) { onSelectBusiness(template); flash('Template dikembalikan ke default'); } };
-
-  return (
-    <>
-      <button type="button" onClick={() => setIsOpen(true)} className="fixed right-4 top-20 z-40 flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/95 px-3.5 py-2 text-xs font-semibold text-white shadow-2xl backdrop-blur-md"><Settings2 className="h-3.5 w-3.5 text-amber-400" /><span className="hidden sm:inline">Config Generator</span><span className="font-bold text-amber-300">{currentBusiness.name}</span></button>
-
-      {isOpen && (
-        <div className="fixed inset-0 z-50">
-          <button type="button" aria-label="Tutup config generator" onClick={() => setIsOpen(false)} className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]" />
-          <aside className="absolute right-0 top-0 flex h-full w-full max-w-[760px] flex-col overflow-hidden bg-white shadow-2xl">
-            <header className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-slate-950 px-4 py-3 text-white"><div className="flex min-w-0 items-center gap-3"><div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-400 text-slate-950"><Sparkles className="h-4 w-4" /></div><div className="min-w-0"><h2 className="truncate text-sm font-bold">UMKM Config Generator</h2><p className="truncate text-[10px] text-slate-400">Edit seluruh config theme, style & content tanpa menyentuh component</p></div></div><button type="button" onClick={() => setIsOpen(false)} className="rounded-lg p-2 text-slate-300 hover:bg-white/10 hover:text-white"><X className="h-4 w-4" /></button></header>
-
-            <div className="flex min-h-0 flex-1">
-              <nav className="w-[190px] shrink-0 overflow-y-auto border-r border-slate-200 bg-slate-50 p-2.5">
-                {tabGroups.map((group) => <div key={group.title} className="mb-4"><button type="button" onClick={() => setActiveGroup(activeGroup === group.title ? '' : group.title)} className="mb-1 flex w-full items-center justify-between px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">{group.title}<ChevronRight className={`h-3 w-3 transition ${activeGroup === group.title ? 'rotate-90' : ''}`} /></button>{activeGroup === group.title && <div className="space-y-0.5">{group.items.map((item) => { const Icon = item.icon; return <button key={item.id} type="button" onClick={() => setActiveTab(item.id)} className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[10px] font-semibold transition ${activeTab === item.id ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-white hover:text-slate-900'}`}><Icon className="h-3.5 w-3.5 shrink-0" /><span className="truncate">{item.label}</span></button>; })}</div>}</div>)}
-
-                <div className="border-t border-slate-200 pt-3"><p className="px-2 pb-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">Templates</p><div className="space-y-1">{templateList.map((item) => <button key={item.id} type="button" onClick={() => { onSelectBusiness(item.template); flash(`${item.name} dipilih`); }} className={`flex w-full items-center gap-2 rounded-lg border p-1.5 text-left ${currentBusiness.id === item.template.id ? 'border-slate-900 bg-white' : 'border-transparent hover:bg-white'}`}><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-white" style={{ backgroundColor: item.accentColor }}><DynamicIcon name={item.icon} className="h-3 w-3" /></span><span className="truncate text-[9px] font-semibold text-slate-600">{item.name}</span>{currentBusiness.id === item.template.id && <Check className="ml-auto h-3 w-3 text-emerald-600" />}</button>)}</div></div>
-              </nav>
-
-              <main className="min-w-0 flex-1 overflow-y-auto bg-white">
-                <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur"><div className="flex items-center justify-between gap-3"><div><p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Config category</p><h3 className="text-sm font-bold text-slate-900">{tabLabels[activeTab]}</h3></div><button type="button" onClick={copyCurrentJson} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-[9px] font-bold text-slate-600 hover:bg-slate-50"><Copy className="h-3 w-3" /> Copy JSON</button></div></div>
-
-                <div className="space-y-3 p-4">
-                  {activeTab === 'business' ? <div className="space-y-3"><div className="rounded-xl border border-sky-100 bg-sky-50 p-3"><p className="text-[10px] font-bold text-sky-900">Business & Content</p><p className="mt-1 text-[9px] leading-relaxed text-sky-700">Field utama dari business.ts, termasuk contact, about, statistics, process, social links dan visibility section.</p></div>{Object.entries(activeConfig).map(([key, value]) => hiddenKeys.has(key) ? null : <ConfigField key={key} label={key} value={value} path={['business', key]} onChange={handleChange} onDelete={handleDelete} />)}</div> : <div className="space-y-3">{activeTab === 'hero' && <div className="rounded-xl border border-amber-100 bg-amber-50 p-3"><p className="text-[10px] font-bold text-amber-900">Hero Config</p><p className="mt-1 text-[9px] leading-relaxed text-amber-700">Semua field hero.ts ditampilkan otomatis berdasarkan object config aktif.</p></div>}{activeTab === 'theme' && <div className="rounded-xl border border-violet-100 bg-violet-50 p-3"><p className="text-[10px] font-bold text-violet-900">Theme & Style</p><p className="mt-1 text-[9px] leading-relaxed text-violet-700">Palette, typography, radius, WhatsApp color dan theme-level styling.</p></div>}{activeConfig && typeof activeConfig === 'object' && Object.entries(activeConfig).map(([key, value]) => key === 'fontOptionId' ? <label key={key} className="block"><span className="mb-1 block text-[9px] font-bold text-slate-500">Font Option</span><select value={value} onChange={(event) => { const font = fontOptions.find((item) => item.id === event.target.value); handleChange([key], event.target.value); if (font) handleChange(['fontFamily'], font.family); }} className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[10px] outline-none"><option value="">Pilih font</option>{fontOptions.map((font) => <option key={font.id} value={font.id}>{font.name}</option>)}</select></label> : <ConfigField key={key} label={key} value={value} path={[key]} onChange={handleChange} onDelete={handleDelete} />)}</div>}
-                  {(!activeConfig || (typeof activeConfig === 'object' && Object.keys(activeConfig).length === 0)) && <div className="rounded-xl border border-dashed border-slate-300 p-8 text-center"><p className="text-xs font-semibold text-slate-500">Belum ada data config</p><p className="mt-1 text-[9px] text-slate-400">Tambahkan data pada file config terkait terlebih dahulu.</p></div>}
-                </div>
-              </main>
-            </div>
-
-            <footer className="flex shrink-0 flex-wrap items-center gap-2 border-t border-slate-200 bg-white p-3"><button type="button" onClick={generateSectionConfig} className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-2 text-[9px] font-bold text-white hover:bg-slate-800"><Download className="h-3.5 w-3.5" /> Export {tabLabels[activeTab]}</button><button type="button" onClick={generateAllConfig} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-[9px] font-bold text-white hover:bg-emerald-700"><Download className="h-3.5 w-3.5" /> Generate Full Config</button><button type="button" onClick={resetCurrent} className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-[9px] font-bold text-slate-600 hover:bg-slate-50"><RotateCcw className="h-3.5 w-3.5" /> Reset Template</button>{message && <span className="text-[9px] font-bold text-emerald-600">{message}</span>}</footer>
-          </aside>
-        </div>
-      )}
-    </>
-  );
-};
+export const DevPanel:React.FC<DevPanelProps>=({currentBusiness,onSelectBusiness})=>{
+ const[open,setOpen]=useState(false);const[tab,setTab]=useState<Tab>('business');const[group,setGroup]=useState(0);const[msg,setMsg]=useState('');
+ const hero:HeroConfig={...heroVariantPresets.split,...(currentBusiness.hero||{}),headline:currentBusiness.hero?.headline||currentBusiness.heroHeadline,description:currentBusiness.hero?.description||currentBusiness.heroDescription,primaryCtaText:currentBusiness.hero?.primaryCtaText||currentBusiness.primaryCtaText,secondaryCtaText:currentBusiness.hero?.secondaryCtaText||currentBusiness.secondaryCtaText};
+ const change=(next:BusinessConfig)=>onSelectBusiness(next);const flash=(s:string)=>{setMsg(s);setTimeout(()=>setMsg(''),1600)};
+ const download=(name:string,text:string)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/typescript'}));a.download=name;a.click();};
+ const key=tab==='business'?null:configKeys[tab];
+ const active=useMemo(()=>tab==='business'?Object.fromEntries(businessFields.filter(k=>k in currentBusiness).map(k=>[k,(currentBusiness as AnyRecord)[k]])):(key?(currentBusiness as AnyRecord)[key]:{}),[tab,currentBusiness,key]);
+ const onChange=(path:string[],value:any)=>{if(tab==='hero'){change({...currentBusiness,hero:setPath(hero,path,value)});return;}if(tab==='business'){change(setPath(currentBusiness,path,value));return;}if(key)change({...currentBusiness,[key]:setPath((currentBusiness as AnyRecord)[key],path,value)});};
+ const onDelete=(path:string[])=>{if(tab==='business'){change(delPath(currentBusiness,path));return;}if(key)change({...currentBusiness,[key]:delPath((currentBusiness as AnyRecord)[key],path)});};
+ const exportAll=()=>{download(`${currentBusiness.id}-business.config.ts`,`import { BusinessConfig } from '../types/business';\n\nexport const businessConfig: BusinessConfig = ${JSON.stringify(currentBusiness,null,2)};\n\nexport default businessConfig;\n`);flash('Full config berhasil dibuat');};
+ return <><button type="button" onClick={()=>setOpen(true)} className="fixed right-4 top-20 z-40 flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/95 px-3.5 py-2 text-xs font-semibold text-white shadow-2xl"><Settings2 className="h-3.5 w-3.5 text-amber-400"/>Config Generator<span className="hidden sm:inline text-amber-300">· {currentBusiness.name}</span></button>{open&&<div className="fixed inset-0 z-50"><button aria-label="Tutup" onClick={()=>setOpen(false)} className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]"/><aside className="absolute right-0 top-0 flex h-full w-full max-w-[820px] flex-col overflow-hidden bg-white shadow-2xl"><header className="flex items-center justify-between bg-slate-950 px-4 py-3 text-white"><div><div className="flex items-center gap-2 text-sm font-bold"><Sparkles className="h-4 w-4 text-amber-400"/>UMKM Config Generator</div><p className="text-[9px] text-slate-400">Live editor untuk seluruh config website</p></div><button onClick={()=>setOpen(false)} className="rounded-lg p-2 hover:bg-white/10"><X className="h-4 w-4"/></button></header><div className="flex min-h-0 flex-1"><nav className="w-44 shrink-0 overflow-y-auto border-r bg-slate-50 p-2">{groups.map((g,gi)=><div key={g.title} className="mb-4"><p className="px-2 py-1 text-[8px] font-bold uppercase tracking-wider text-slate-400">{g.title}</p>{g.items.map(([id,label,Icon])=><button key={id} onClick={()=>{setTab(id as Tab);setGroup(gi)}} className={`mb-1 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-[9px] font-semibold ${tab===id?'bg-slate-900 text-white':'text-slate-600 hover:bg-white'}`}><Icon className="h-3.5 w-3.5"/>{label}</button>)}</div>)}<button onClick={()=>{const t=templateList.find(x=>x.template.id===currentBusiness.id)?.template;if(t)change(t);flash('Template direset')}} className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-[9px] font-semibold text-slate-500 hover:bg-white"><RotateCcw className="h-3.5 w-3.5"/>Reset template</button></nav><main className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-5"><div className="mb-4 flex items-start justify-between gap-3"><div><h3 className="text-sm font-black text-slate-900">{labels[tab]}</h3><p className="mt-1 text-[9px] text-slate-400">{tab==='hero'?'10 layout modern + copywriting + CTA + visual + contrast':''}</p></div>{tab==='hero'&&<button onClick={()=>change({...currentBusiness,hero:{...heroVariantPresets.split}})} className="rounded-lg border px-2 py-1 text-[9px] font-bold">Reset Hero</button>}</div>{tab==='hero'?<HeroEditor hero={hero} onChange={h=>change({...currentBusiness,hero:h})}/>:tab==='business'?<div className="space-y-3">{Object.entries(active).map(([k,v])=><Field key={k} label={k} value={v} path={[k]} onChange={onChange} onDelete={onDelete}/>)}</div>:<div className="space-y-3">{active?Object.entries(active).map(([k,v])=><Field key={k} label={k} value={v} path={[k]} onChange={onChange} onDelete={onDelete}/>):<div className="rounded-xl border border-dashed p-5 text-center text-[10px] text-slate-400">Config belum tersedia.</div>}</div>}</main></div><footer className="flex shrink-0 flex-wrap gap-2 border-t bg-white p-3"><button onClick={exportAll} className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-2 text-[9px] font-bold text-white"><Download className="h-3 w-3"/>Generate Full Config</button><button onClick={()=>{navigator.clipboard.writeText(JSON.stringify(currentBusiness,null,2));flash('JSON tersalin')}} className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-[9px] font-bold"><Copy className="h-3 w-3"/>Copy JSON</button>{msg&&<span className="ml-auto rounded-lg bg-emerald-50 px-3 py-2 text-[9px] font-bold text-emerald-700">{msg}</span>}</footer></aside></div>}</>;
