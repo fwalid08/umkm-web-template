@@ -1,9 +1,9 @@
-import { BusinessConfig, HeroConfig } from '../types/business';
+import type { BusinessConfig, HeroConfig } from '../types/business';
+import { resolvePresetOrder } from '../config/presets';
 
 /**
- * Keeps the renderer contract simple: the nested `hero` object is the source
- * of truth for Hero content, while legacy top-level fields remain synchronized
- * for presets/export compatibility.
+ * Normalizes config at the renderer boundary so older configs remain valid while
+ * new template/industry presets can control the default section order.
  */
 export function normalizeBusinessConfig(input: BusinessConfig): BusinessConfig {
   const fallback = input.hero || ({
@@ -24,8 +24,14 @@ export function normalizeBusinessConfig(input: BusinessConfig): BusinessConfig {
     backgroundImageUrl: fallback.backgroundImageUrl || input.heroImageUrl,
   };
 
+  const presetOrder = resolvePresetOrder(input.templateId, input.industryPresetId);
+  const pageSections = input.pageSections?.order?.length
+    ? input.pageSections
+    : { ...input.pageSections, order: presetOrder };
+
   return {
     ...input,
+    pageSections,
     hero,
     heroHeadline: hero.headline || input.heroHeadline,
     heroDescription: hero.description || input.heroDescription,
