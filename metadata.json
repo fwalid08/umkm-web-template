@@ -1,0 +1,6 @@
+{
+  "name": "Bengkel Jaya Motor - Template Website UMKM",
+  "description": "Website profil bisnis modern, mobile-first, dan data-driven untuk UMKM Indonesia dengan integrasi booking WhatsApp.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

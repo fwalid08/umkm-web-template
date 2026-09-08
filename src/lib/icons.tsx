@@ -1,0 +1,95 @@
+import React from 'react';
+import {
+  Wrench,
+  Settings,
+  Droplets,
+  Zap,
+  ShieldCheck,
+  Clock,
+  ThumbsUp,
+  Award,
+  Users,
+  MapPin,
+  Phone,
+  Mail,
+  Calendar,
+  CheckCircle2,
+  XCircle,
+  HelpCircle,
+  MessageCircle,
+  ArrowRight,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  Star,
+  Sparkles,
+  Gauge,
+  Flame,
+  Shield,
+  Truck,
+  HeartHandshake,
+  DollarSign,
+  Coffee,
+  Scissors,
+  Shirt,
+  Utensils,
+  Wind,
+  Smile,
+  Search,
+  FileText,
+  LucideProps,
+} from 'lucide-react';
+import { WhatsAppIcon } from '../components/common/WhatsAppIcon';
+
+export { WhatsAppIcon };
+
+const iconMap: Record<string, React.FC<any>> = {
+  WhatsApp: WhatsAppIcon,
+  whatsapp: WhatsAppIcon,
+  Wrench,
+  Settings,
+  Droplets,
+  Zap,
+  ShieldCheck,
+  Clock,
+  ThumbsUp,
+  Award,
+  Users,
+  MapPin,
+  Phone,
+  Mail,
+  Calendar,
+  CheckCircle2,
+  XCircle,
+  HelpCircle,
+  MessageCircle,
+  ArrowRight,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  Star,
+  Sparkles,
+  Gauge,
+  Flame,
+  Shield,
+  Truck,
+  HeartHandshake,
+  DollarSign,
+  Coffee,
+  Scissors,
+  Shirt,
+  Utensils,
+  Wind,
+  Smile,
+  Search,
+  FileText,
+};
+
+interface DynamicIconProps extends LucideProps {
+  name: string;
+}
+
+export const DynamicIcon: React.FC<DynamicIconProps> = ({ name, ...props }) => {
+  const IconComponent = iconMap[name] || Sparkles;
+  return <IconComponent {...props} />;
+};
