@@ -1,64 +1,19 @@
 import { NavigationConfig } from '../types/business';
 
-/**
- * Site Navigation & Mobile App Bar Configuration
- *
- * Configures desktop navigation bar, slide-out mobile drawer,
- * and the native-app-style bottom navigation bar on mobile devices.
- */
 export const navigationConfig: NavigationConfig = {
   showTopMicroBar: true,
-  showMobileBottomNav: true, // Native app-like bottom navigation bar on mobile
+  showMobileBottomNav: true,
   ctaButtonText: 'Booking WhatsApp',
+  topNavMaxVisible: 5,
   links: [
-    {
-      name: 'Beranda',
-      href: '#beranda',
-      iconName: 'Home',
-      showInBottomNav: true,
-    },
-    {
-      name: 'Layanan',
-      href: '#layanan',
-      iconName: 'Wrench',
-      showInBottomNav: true,
-    },
-    {
-      name: 'Paket Biaya',
-      href: '#harga',
-      iconName: 'Tag',
-      badge: 'Hemat',
-      showInBottomNav: true,
-    },
-    {
-      name: 'Keunggulan',
-      href: '#keunggulan',
-      iconName: 'ShieldCheck',
-      showInBottomNav: false,
-    },
-    {
-      name: 'Galeri',
-      href: '#galeri',
-      iconName: 'Image',
-      showInBottomNav: false,
-    },
-    {
-      name: 'Testimoni',
-      href: '#testimoni',
-      iconName: 'Star',
-      showInBottomNav: false,
-    },
-    {
-      name: 'Lokasi & Jam',
-      href: '#lokasi',
-      iconName: 'MapPin',
-      showInBottomNav: true,
-    },
-    {
-      name: 'FAQ',
-      href: '#faq',
-      iconName: 'HelpCircle',
-      showInBottomNav: false,
-    },
+    { name:'Beranda', href:'#beranda', iconName:'Home', showInBottomNav:true, showInTopNav:true },
+    { name:'Tentang', href:'#tentang', iconName:'Info', showInBottomNav:false, showInTopNav:true },
+    { name:'Layanan', href:'#layanan', iconName:'Wrench', showInBottomNav:true, showInTopNav:true },
+    { name:'Paket Biaya', href:'#harga', iconName:'Tag', badge:'Hemat', showInBottomNav:true, showInTopNav:true },
+    { name:'Keunggulan', href:'#keunggulan', iconName:'ShieldCheck', showInBottomNav:false, showInTopNav:true },
+    { name:'Galeri', href:'#galeri', iconName:'Image', showInBottomNav:false, showInTopNav:true },
+    { name:'Testimoni', href:'#testimoni', iconName:'Star', showInBottomNav:false, showInTopNav:true },
+    { name:'Lokasi & Jam', href:'#lokasi', iconName:'MapPin', showInBottomNav:true, showInTopNav:true },
+    { name:'FAQ', href:'#faq', iconName:'HelpCircle', showInBottomNav:false, showInTopNav:true },
   ],
 };
