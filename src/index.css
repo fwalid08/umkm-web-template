@@ -12,14 +12,18 @@
     --color-text-muted: #64748B;
     --border-radius: 0.75rem;
     --hero-background-blur: 0px;
+    --hero-background-image-blur: 4px;
+    --hero-overlay-image: none;
+    --hero-overlay-image-opacity: .28;
   }
   html { scroll-behavior:smooth; font-feature-settings:"cv02","cv03","cv04","cv11"; }
   body { background-color:var(--color-background); color:var(--color-text); font-family:var(--font-family,'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; overflow-x:hidden; }
 }
 
-/* The original Hero component exposes these Tailwind blur classes. Map them to deliberately stronger visual levels. */
-.blur-\\[2px\\]{filter:blur(4px)!important}.blur-\\[4px\\]{filter:blur(12px)!important}.blur-\\[8px\\]{filter:blur(24px)!important}
-#beranda > .absolute.inset-0.overflow-hidden { filter:blur(var(--hero-background-blur,0px)); transform:scale(1.025); transition:filter .25s ease,transform .25s ease; }
+/* Hero image blur is now driven by the Config Generator slider. */
+.blur-\[2px\],.blur-\[4px\],.blur-\[8px\]{filter:blur(var(--hero-background-image-blur,4px))!important}
+#beranda > .absolute.inset-0.overflow-hidden { filter:blur(var(--hero-background-blur,0px)); transform:scale(1.035); transition:filter .25s ease,transform .25s ease; }
+#beranda::after { content:""; position:absolute; inset:0; z-index:1; pointer-events:none; background-image:var(--hero-overlay-image); background-position:center; background-size:cover; background-repeat:no-repeat; opacity:var(--hero-overlay-image-opacity,.28); mix-blend-mode:soft-light; }
 
 ::-webkit-scrollbar { width:8px; }
 ::-webkit-scrollbar-track { background:#f1f5f9; }
