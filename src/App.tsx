@@ -25,6 +25,12 @@ import { LoadingScreen } from './components/LoadingScreen';
 import { getFontById } from './config/fonts';
 
 const blurPixels: Record<string,string> = { none:'0px', sm:'2px', md:'4px', lg:'8px' };
+const defaultHeroTrustPoints = [
+  'Tenaga Berpengalaman & Terlatih',
+  '100% Suku Cadang & Bahan Terjamin',
+  'Estimasi Biaya Transparan Tanpa Siluman',
+  'Prioritas Antrean Booking WhatsApp',
+];
 
 function heroGradientValue(hero: BusinessConfig['hero']) {
   const style = hero?.gradientStyle || 'brand-glow';
@@ -45,6 +51,33 @@ function heroGradientValue(hero: BusinessConfig['hero']) {
     case 'brand-glow':
     default: return dark ? `radial-gradient(circle at 8% 15%, color-mix(in srgb, var(--color-primary) 42%, transparent), transparent 34%), radial-gradient(circle at 90% 20%, color-mix(in srgb, var(--color-accent) 32%, transparent), transparent 32%), linear-gradient(135deg, var(--hero-base-color) 0%, #0f172a 100%)` : `radial-gradient(circle at 8% 15%, color-mix(in srgb, var(--color-primary) 18%, transparent), transparent 34%), radial-gradient(circle at 90% 20%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 32%), linear-gradient(135deg, var(--hero-base-color) 0%, #ffffff 100%)`;
   }
+}
+
+function syncHeroTrustPointVisibility(business: BusinessConfig) {
+  const section = document.getElementById('beranda');
+  if (!section) return;
+
+  section.querySelectorAll<HTMLElement>('[data-config-trust-point-row]').forEach((row) => {
+    row.style.removeProperty('display');
+  });
+
+  if (business.hero?.showTrustPoints !== false) return;
+
+  const points = new Set(
+    business.hero?.trustPoints && business.hero.trustPoints.length > 0
+      ? business.hero.trustPoints.map((point) => point.trim())
+      : defaultHeroTrustPoints
+  );
+
+  Array.from(section.querySelectorAll<HTMLElement>('div')).forEach((element) => {
+    if (element.children.length !== 2) return;
+    const text = element.textContent?.trim() || '';
+    if (!points.has(text)) return;
+    const hasIcon = element.querySelector('svg');
+    if (!hasIcon) return;
+    element.dataset.configTrustPointRow = 'true';
+    element.style.display = 'none';
+  });
 }
 
 export default function App() {
@@ -83,6 +116,11 @@ export default function App() {
     root.style.setProperty('--font-family', previewBusiness.theme.fontFamily || font.family);
     document.title = previewBusiness.seo?.title || `${previewBusiness.name} - ${previewBusiness.tagline}`;
   }, [previewBusiness]);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => syncHeroTrustPointVisibility(previewBusiness));
+    return () => window.cancelAnimationFrame(frame);
+  }, [previewBusiness.hero?.showTrustPoints, previewBusiness.hero?.trustPoints, previewRevision]);
 
   const sections = previewBusiness.sections || { stats:true, about:true, services:true, pricing:true, whyChooseUs:true, gallery:true, testimonials:true, process:true, faq:true, location:true, cta:true };
   return <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{backgroundColor:previewBusiness.theme.backgroundColor}}>
