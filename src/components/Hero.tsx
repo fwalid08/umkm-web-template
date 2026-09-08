@@ -1,12 +1,11 @@
 import React from 'react';
 import { BusinessConfig, HeroConfig } from '../types/business';
 import { generateWhatsAppLink } from '../lib/whatsapp';
-import { WhatsAppIcon } from './common/WhatsAppIcon';
 import { ArrowRight, Star, CheckCircle2, Sparkles, ChevronRight } from 'lucide-react';
 
 interface HeroProps { business: BusinessConfig; }
 
-export function getHeroIsDark(hero: HeroConfig | undefined, business: BusinessConfig): boolean {
+export function getHeroIsDark(hero: HeroConfig | undefined): boolean {
   if (hero?.backgroundMode === 'dark') return true;
   if (hero?.backgroundMode === 'light') return false;
   if (hero?.gradientStyle === 'dark-slate' || hero?.gradientStyle === 'ocean-depth') return true;
@@ -15,90 +14,83 @@ export function getHeroIsDark(hero: HeroConfig | undefined, business: BusinessCo
     const hex = hero.backgroundColor.replace('#', '').trim();
     if (hex.length === 3 || hex.length === 6) {
       const full = hex.length === 3 ? hex.split('').map(c => c + c).join('') : hex;
-      const r = parseInt(full.slice(0, 2), 16); const g = parseInt(full.slice(2, 4), 16); const b = parseInt(full.slice(4, 6), 16);
+      const r = parseInt(full.slice(0, 2), 16), g = parseInt(full.slice(2, 4), 16), b = parseInt(full.slice(4, 6), 16);
       return (0.299 * r + 0.587 * g + 0.114 * b) < 140;
     }
   }
-  return hero?.layoutVariant === 'card-overlay' && !hero?.backgroundColor;
+  return false;
 }
-
-const HeroBackground: React.FC<{ business: BusinessConfig; isDark: boolean }> = ({ business, isDark }) => {
-  const hero = business.hero || {};
-  const primaryColor = business.theme.primaryColor || '#EF4444';
-  const accentColor = business.theme.accentColor || '#38BDF8';
-  const baseBgColor = hero.backgroundColor || (isDark ? '#0B0F19' : '#F8FAFC');
-  const gradientStyle = hero.gradientStyle || 'brand-glow';
-  const orbsEnabled = hero.ambientOrbs?.enabled !== false;
-  const orb1Color = hero.ambientOrbs?.color1 || primaryColor;
-  const orb2Color = hero.ambientOrbs?.color2 || accentColor;
-  const orbOpacity = hero.ambientOrbs?.opacity ?? (isDark ? 0.22 : 0.16);
-  const texture = hero.texture || 'dots';
-  const textureOpacity = hero.textureOpacity ?? (isDark ? 0.04 : 0.035);
-  const showBgImage = hero.showBackgroundImageOverlay !== false;
-  const bgImg = hero.backgroundImageUrl || business.heroImageUrl;
-  const imgOpacity = hero.backgroundImageOpacity ?? (isDark ? 0.20 : 0.10);
-  const blurClass = { none: '', sm: 'blur-[2px]', md: 'blur-[4px]', lg: 'blur-[8px]' }[hero.backgroundImageBlur || 'sm'];
-  let gradientOverlayStyle: React.CSSProperties = {};
-  let gradientClasses = '';
-  if (gradientStyle === 'brand-glow') gradientClasses = isDark ? 'bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950' : 'bg-gradient-to-b from-white via-slate-50/70 to-slate-100/60';
-  else if (gradientStyle === 'aurora-mesh') gradientClasses = isDark ? 'bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.28),rgba(255,255,255,0))] bg-slate-950' : 'bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.14),rgba(255,255,255,0))] bg-slate-50/60';
-  else if (gradientStyle === 'sunset-radiant') gradientClasses = isDark ? 'bg-gradient-to-b from-amber-950/40 via-slate-900 to-slate-950' : 'bg-gradient-to-b from-amber-50/80 via-orange-50/30 to-white';
-  else if (gradientStyle === 'ocean-depth') gradientClasses = 'bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950';
-  else if (gradientStyle === 'emerald-nature') gradientClasses = isDark ? 'bg-gradient-to-b from-emerald-950/40 via-slate-900 to-slate-950' : 'bg-gradient-to-b from-emerald-50/70 via-teal-50/30 to-white';
-  else if (gradientStyle === 'dark-slate') gradientClasses = 'bg-gradient-to-b from-[#0B0F19] via-[#0F172A] to-[#0B0F19]';
-  else if (gradientStyle === 'clean-subtle') gradientClasses = 'bg-gradient-to-b from-white via-slate-50/60 to-slate-100/40';
-  else if (gradientStyle === 'custom' && hero.customGradient) {
-    const { from, via, to, direction = 'to-b' } = hero.customGradient;
-    const dirs: Record<string, string> = { 'to-b': 'to bottom', 'to-br': 'to bottom right', 'to-r': 'to right', 'to-tr': 'to top right' };
-    gradientOverlayStyle = { background: direction === 'radial' ? `radial-gradient(circle at 50% 20%, ${from}, ${via ? via + ', ' : ''}${to})` : `linear-gradient(${dirs[direction] || 'to bottom'}, ${from}, ${via ? via + ', ' : ''}${to})` };
-  }
-  return <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 select-none" style={{ backgroundColor: baseBgColor }} aria-hidden="true">
-    {gradientStyle !== 'solid' && <div className={`absolute inset-0 ${gradientClasses}`} style={gradientOverlayStyle} />}
-    <div className={`absolute top-0 inset-x-0 h-px ${isDark ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-slate-900/10 to-transparent'}`} />
-    {orbsEnabled && <><div className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full blur-3xl" style={{ backgroundColor: orb1Color, opacity: orbOpacity }} /><div className="absolute top-1/4 -right-28 w-[28rem] h-[28rem] rounded-full blur-3xl" style={{ backgroundColor: orb2Color, opacity: orbOpacity * .85 }} /></>}
-    {showBgImage && bgImg && <div className="absolute inset-0"><img src={bgImg} alt="" className={`w-full h-full object-cover object-center scale-105 transform ${blurClass}`} style={{ opacity: imgOpacity, mixBlendMode: isDark ? 'screen' : 'multiply' }} /><div className={`absolute inset-0 ${isDark ? 'bg-gradient-to-b from-slate-950/75 via-slate-900/85 to-slate-950' : 'bg-gradient-to-b from-white/90 via-white/75 to-slate-100/60'}`} /></div>}
-    {texture === 'dots' && <div className="absolute inset-0" style={{ opacity: textureOpacity, backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '18px 18px' }} />}
-    {texture === 'grid' && <div className="absolute inset-0" style={{ opacity: textureOpacity, backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg,currentColor 1px,transparent 1px)', backgroundSize: '28px 28px' }} />}
-  </div>;
-};
 
 const defaultFloatingStats = [
   { value: '1.200+', label: 'Pelanggan' },
   { value: '4.9/5', label: 'Rating' },
 ];
 
+const HeroBackground: React.FC<{ business: BusinessConfig; isDark: boolean }> = ({ business, isDark }) => {
+  const hero = business.hero || {};
+  const primary = business.theme.primaryColor || '#EF4444';
+  const accent = business.theme.accentColor || '#38BDF8';
+  const image = hero.backgroundImageUrl || business.heroImageUrl;
+  const opacity = hero.backgroundImageOpacity ?? 0.28;
+  const showImage = hero.showBackgroundImageOverlay !== false;
+  const style = hero.gradientStyle || 'brand-glow';
+  const background = hero.backgroundColor || (isDark ? '#0B0F19' : '#F8FAFC');
+  const gradient = style === 'aurora-mesh'
+    ? `radial-gradient(ellipse 80% 70% at 50% 0%, ${primary}33, transparent 65%)`
+    : style === 'sunset-radiant'
+      ? 'linear-gradient(180deg, rgba(245,158,11,.14), rgba(255,255,255,0))'
+      : style === 'emerald-nature'
+        ? `radial-gradient(ellipse 70% 70% at 20% 0%, ${primary}22, transparent 70%)`
+        : isDark
+          ? 'linear-gradient(180deg, rgba(15,23,42,.94), rgba(2,6,23,.98))'
+          : 'linear-gradient(180deg, rgba(255,255,255,.98), rgba(241,245,249,.94))';
+  return <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" style={{ backgroundColor: background }} aria-hidden="true">
+    <div className="absolute inset-0" style={{ background: gradient }} />
+    {showImage && image && <>
+      <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover object-center" style={{ opacity }} />
+      <div className="absolute inset-0" style={{ background: isDark ? 'linear-gradient(180deg, rgba(2,6,23,.28), rgba(2,6,23,.84))' : 'linear-gradient(180deg, rgba(255,255,255,.38), rgba(248,250,252,.88))' }} />
+    </>}
+    <div className="absolute -left-32 -top-40 h-96 w-96 rounded-full blur-3xl" style={{ backgroundColor: primary, opacity: .10 }} />
+    <div className="absolute -right-32 top-1/3 h-96 w-96 rounded-full blur-3xl" style={{ backgroundColor: accent, opacity: .08 }} />
+  </div>;
+};
+
 export const Hero: React.FC<HeroProps> = ({ business }) => {
   const hero = business.hero || ({ layoutVariant: 'split' } as HeroConfig);
   const layout = hero.layoutVariant || 'split';
-  const isDark = getHeroIsDark(hero, business);
+  const isDark = getHeroIsDark(hero);
   const headline = hero.headline || business.heroHeadline;
   const description = hero.description || business.heroDescription;
   const primaryCtaText = hero.primaryCtaText || business.primaryCtaText;
   const secondaryCtaText = hero.secondaryCtaText || business.secondaryCtaText;
   const trustPoints = hero.trustPoints?.length ? hero.trustPoints : ['Pelayanan profesional', 'Harga transparan', 'Booking cepat via WhatsApp'];
-  const whatsappLink = generateWhatsAppLink(business.contact.whatsappNumber, business.contact.defaultWhatsAppMessage);
-  const ratingVisible = hero.showRatingPill !== false;
-  const trustVisible = hero.showTrustPoints !== false;
   const stats = hero.floatingStats?.length ? hero.floatingStats : defaultFloatingStats;
-  const statsVisible = hero.showFloatingStats === true;
+  const whatsappLink = generateWhatsAppLink(business.contact.whatsappNumber, business.contact.defaultWhatsAppMessage);
+  const text = isDark ? 'text-white' : 'text-slate-900';
 
-  const content = <div className={`relative z-10 ${isDark ? 'text-white' : 'text-slate-900'} ${layout === 'centered' ? 'mx-auto flex max-w-4xl flex-col items-center text-center' : ''}`}>
-    {hero.eyebrowText && <div className="mb-3 text-xs font-bold uppercase tracking-[.16em] opacity-70">{hero.eyebrowText}</div>}
-    {hero.badgeText && <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-current/15 bg-white/10 px-3 py-1 text-xs font-semibold"><Sparkles size={13} />{hero.badgeText}</div>}
-    <h1 className="max-w-4xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">{headline}</h1>
+  const proof = <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:justify-start">
+    {hero.showRatingPill !== false && <div className="inline-flex items-center gap-2 rounded-full border border-current/10 bg-white/65 px-3.5 py-2 text-xs shadow-sm backdrop-blur-md"><Star size={14} fill="currentColor" className="text-[var(--color-primary)]" /><b>{hero.ratingValue || '4.9 / 5.0'}</b><span className="opacity-55">{hero.ratingLabel || 'Ulasan pelanggan'}</span></div>}
+    {hero.showFloatingStats === true && <div className="flex overflow-hidden rounded-2xl border border-current/10 bg-white/55 shadow-sm backdrop-blur-md">{stats.map((stat, i) => <div key={`${stat.label}-${i}`} className={`px-4 py-2.5 ${i > 0 ? 'border-l border-current/10' : ''}`}><b className="block text-sm leading-none">{stat.value}</b><span className="mt-1 block text-[10px] opacity-55">{stat.label}</span></div>)}</div>}
+  </div>;
+
+  const content = <div className={`relative z-10 ${text} ${layout === 'centered' ? 'mx-auto max-w-3xl text-center' : 'max-w-2xl'}`}>
+    {hero.eyebrowText && <div className="mb-3 text-xs font-bold uppercase tracking-[.16em] opacity-65">{hero.eyebrowText}</div>}
+    {hero.badgeText && <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-current/10 bg-white/55 px-3 py-1 text-xs font-semibold backdrop-blur-md"><Sparkles size={13} />{hero.badgeText}</div>}
+    <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">{headline}</h1>
     <p className="mt-5 max-w-2xl text-sm leading-7 opacity-75 sm:text-base">{description}</p>
     <div className={`mt-7 flex flex-wrap gap-3 ${layout === 'centered' ? 'justify-center' : ''}`}>
       <a href={whatsappLink} className="inline-flex items-center gap-2 rounded-xl bg-[var(--color-primary)] px-5 py-3 text-sm font-extrabold text-white shadow-lg">{primaryCtaText}<ArrowRight size={16} /></a>
-      {secondaryCtaText && <a href={hero.secondaryCtaUrl || '#tentang'} className="inline-flex items-center gap-2 rounded-xl border border-current/15 bg-white/10 px-5 py-3 text-sm font-bold">{secondaryCtaText}<ChevronRight size={16} /></a>}
+      {secondaryCtaText && <a href={hero.secondaryCtaUrl || '#tentang'} className="inline-flex items-center gap-2 rounded-xl border border-current/15 bg-white/55 px-5 py-3 text-sm font-bold backdrop-blur-md">{secondaryCtaText}<ChevronRight size={16} /></a>}
     </div>
-    {hero.ctaNote && <p className="mt-3 text-xs opacity-60">{hero.ctaNote}</p>}
-    {trustVisible && <div className={`mt-7 grid w-full max-w-2xl gap-2 text-xs font-semibold sm:grid-cols-2 ${layout === 'centered' ? 'text-left' : ''}`}>{trustPoints.map((point, i) => <div key={`${point}-${i}`} className="flex items-center gap-2"><CheckCircle2 size={15} className="shrink-0 text-[var(--color-primary)]" /><span>{point}</span></div>)}</div>}
-    {ratingVisible && <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-current/10 bg-white/10 px-3 py-2 text-xs"><Star size={14} fill="currentColor" /> <b>{hero.ratingValue || '4.9 / 5.0'}</b><span className="opacity-60">{hero.ratingLabel || 'Ulasan pelanggan'}</span></div>}
-    {statsVisible && <div className="mt-6 grid w-full max-w-md grid-cols-2 gap-3">{stats.map((stat, i) => <div key={`${stat.label}-${i}`} className="rounded-2xl border border-current/10 bg-white/10 p-4 text-left backdrop-blur-sm"><b className="block text-xl">{stat.value}</b><span className="text-xs opacity-65">{stat.label}</span></div>)}</div>}
+    {hero.ctaNote && <p className="mt-3 text-xs opacity-55">{hero.ctaNote}</p>}
+    {proof}
+    {hero.showTrustPoints !== false && <div className={`mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold opacity-70 ${layout === 'centered' ? 'justify-center' : ''}`}>{trustPoints.map((point, i) => <div key={`${point}-${i}`} className="flex items-center gap-1.5"><CheckCircle2 size={14} className="shrink-0 text-[var(--color-primary)]" /><span>{point}</span></div>)}</div>}
   </div>;
 
-  return <section id="beranda" className={`relative isolate overflow-hidden ${hero.minHeight === 'auto' ? 'py-20' : hero.minHeight === 'large' ? 'min-h-[720px]' : 'min-h-screen'} flex items-center`}>
+  return <section id="beranda" className={`relative isolate flex items-center overflow-hidden ${hero.minHeight === 'auto' ? 'py-20' : hero.minHeight === 'large' ? 'min-h-[720px]' : 'min-h-screen'}`}>
     <HeroBackground business={business} isDark={isDark} />
-    <div className={`mx-auto w-full max-w-7xl px-5 py-20 sm:px-8 ${layout === 'centered' ? 'text-center' : ''}`}><div className={layout === 'split' ? 'grid items-center gap-10 lg:grid-cols-[1.1fr_.9fr]' : ''}>{content}{layout === 'split' && <div className="relative z-10"><img src={hero.backgroundImageUrl || business.heroImageUrl} alt={business.name} className="w-full rounded-3xl object-cover shadow-2xl" /></div>}</div></div>
+    <div className="mx-auto w-full max-w-7xl px-5 py-20 sm:px-8">
+      {layout === 'split' ? <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_.9fr]">{content}<div className="relative z-10"><img src={hero.backgroundImageUrl || business.heroImageUrl} alt={business.name} className="w-full rounded-3xl object-cover shadow-2xl" /></div></div> : content}
+    </div>
   </section>;
 };
