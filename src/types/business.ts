@@ -8,16 +8,12 @@ export interface GalleryItem { id: string; title: string; category: string; imag
 export interface TestimonialItem { id: string; name: string; roleOrVehicle?: string; rating: number; comment: string; date?: string; avatarUrl: string; }
 export interface ProcessStep { step: number; title: string; description: string; iconName: string; }
 export interface FaqItem { id: string; question: string; answer: string; category?: string; }
-
-// split/card-overlay remain accepted for backwards compatibility with older template data.
-// They are intentionally hidden from the new 10-option Hero UI.
-export type HeroLayoutVariant = 'centered' | 'card-left' | 'card-right' | 'background-focus' | 'minimal' | 'editorial' | 'image-split' | 'floating-card' | 'spotlight' | 'bottom-bar' | 'split' | 'card-overlay';
+export type HeroLayoutVariant = 'centered' | 'split' | 'card-overlay';
 export type HeroVariant = HeroLayoutVariant;
 export type HeroGradientStyle = 'brand-glow' | 'aurora-mesh' | 'sunset-radiant' | 'ocean-depth' | 'emerald-nature' | 'dark-slate' | 'clean-subtle' | 'custom' | 'solid';
 export type HeroBackgroundMode = 'auto' | 'light' | 'dark';
 export type HeroTextureType = 'dots' | 'grid' | 'mesh' | 'none';
 export type HeroBackgroundType = 'color' | 'image' | 'image-overlay';
-
 export interface HeroCustomGradient { from: string; via?: string; to: string; direction?: 'to-b' | 'to-br' | 'to-r' | 'to-tr' | 'radial'; }
 export interface HeroAmbientOrbsConfig { enabled?: boolean; color1?: string; color2?: string; opacity?: number; blur?: 'sm' | 'md' | 'lg' | 'xl'; }
 export interface HeroStatItem { value: string; label: string; }
@@ -32,7 +28,6 @@ export interface HeroConfig {
   backgroundImageBlur?: 'none' | 'sm' | 'md' | 'lg'; backgroundImagePosition?: string; overlayColor?: string; overlayOpacity?: number; overlayGradient?: boolean;
   minHeight?: 'auto' | 'screen' | 'large'; contentAlign?: 'left' | 'center'; contentMaxWidth?: 'sm' | 'md' | 'lg' | 'xl'; textTheme?: 'auto' | 'light' | 'dark'; accentText?: string;
 }
-
 export type FontOptionId = 'plus-jakarta' | 'outfit' | 'dm-sans' | 'poppins' | 'inter';
 export interface FontOption { id: FontOptionId; name: string; family: string; category: string; description: string; }
 export interface LocationSectionConfig { badgeText?: string; title?: string; description?: string; addressTitle?: string; hoursTitle?: string; openTodayBadgeText?: string; supportTitle?: string; directionsButtonText?: string; askDirectionsButtonText?: string; askDirectionsMessage?: string; features?: string[]; }
