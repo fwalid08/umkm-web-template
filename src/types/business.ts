@@ -1,4 +1,4 @@
-export interface SocialLink { platform: 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'twitter' | 'google'; url: string; label: string; }
+export interface SocialLink { platform: 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'twitter' | 'google' | 'linkedin'; url: string; label: string; }
 export interface OpeningHour { day: string; hours: string; isClosed?: boolean; }
 export interface StatisticItem { id: string; value: string; label: string; description?: string; }
 export interface ServiceItem { id: string; name: string; category?: string; description: string; startingPrice: number; priceNote?: string; duration?: string; iconName: string; popular?: boolean; features?: string[]; bookingMessage?: string; }
