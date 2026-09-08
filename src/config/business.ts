@@ -15,6 +15,8 @@ export const businessConfig: BusinessConfig = {
   id: 'bengkel-jaya-motor',
   name: 'Bengkel Jaya Motor',
   industry: 'Bengkel Sepeda Motor',
+  templateId: 'modern-local-business',
+  industryPresetId: 'automotive',
   tagline: 'Spesialis Servis Injeksi & Matic Bergaransi',
   heroHeadline: 'Solusi Terpercaya Perawatan Motor Anda di Kota Banjar',
   heroDescription: 'Layanan servis motor profesional, kalibrasi sistem injeksi, dan perawatan CVT matic anti-gredek. Dikerjakan oleh mekanik bersertifikat dengan suku cadang original dan garansi pengerjaan 14 hari.',
@@ -26,9 +28,8 @@ export const businessConfig: BusinessConfig = {
 
   sections: { stats: true, about: true, services: true, pricing: true, whyChooseUs: true, gallery: true, testimonials: true, process: true, faq: true, location: true, cta: true },
 
-  // Page-builder order. Hero stays fixed as the first section; the configured list controls everything after it.
+  // Explicit pageSections.order still wins over presets. Remove it here so the automotive preset drives the demo layout.
   pageSections: {
-    order: ['services', 'pricing', 'whyChooseUs', 'testimonials', 'process', 'about', 'gallery', 'faq', 'location', 'cta', 'stats'],
     items: {
       stats: { id: 'stats', enabled: true },
       gallery: { id: 'gallery', enabled: true },
