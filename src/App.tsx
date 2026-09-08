@@ -37,7 +37,7 @@ function heroGradientValue(hero: BusinessConfig['hero']) {
 }
 
 export default function App() {
-  const isStudio = typeof window !== 'undefined' && (window.location.pathname === '/studio' || window.location.pathname.startsWith('/studio/'));
+  const isStudio = typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname === '/studio' || window.location.pathname.startsWith('/studio/'));
   const previewBusiness = normalizeBusinessConfig(businessConfig);
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function App() {
     document.title = previewBusiness.seo?.title || `${previewBusiness.name} - ${previewBusiness.tagline}`;
   }, [previewBusiness, isStudio]);
 
-  if (isStudio) return <WebsiteStudio onClose={() => { window.location.href = '/'; }} />;
+  if (isStudio) return <WebsiteStudio />;
 
   return <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{ backgroundColor: previewBusiness.theme.backgroundColor }}>
     <LoadingScreen business={previewBusiness}/><JsonLdScript business={previewBusiness}/>
