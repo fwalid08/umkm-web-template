@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { businessConfig } from './config/business';
 import { BusinessConfig } from './types/business';
+import { normalizeBusinessConfig } from './lib/config-runtime';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Stats } from './components/Stats';
@@ -52,44 +53,42 @@ export default function App() {
 
   const handleBusinessChange = (nextBusiness: BusinessConfig) => {
     setBusiness(nextBusiness);
-
-    // A preset replaces the entire business object. Some preview components can
-    // retain internal UI state when their layout stays the same, so force a clean
-    // preview mount only when the selected business preset changes. Normal field
-    // edits continue to update through React props without remounting the page.
     if (nextBusiness.id !== business.id) {
       setPreviewRevision((revision) => revision + 1);
     }
   };
 
+  const previewBusiness = normalizeBusinessConfig(business);
+
   useEffect(() => {
     const root = document.documentElement;
-    root.style.setProperty('--color-primary', business.theme.primaryColor);
-    root.style.setProperty('--color-primary-hover', business.theme.primaryHover);
-    root.style.setProperty('--color-secondary', business.theme.secondaryColor);
-    root.style.setProperty('--color-accent', business.theme.accentColor);
-    root.style.setProperty('--color-background', business.theme.backgroundColor);
-    root.style.setProperty('--color-surface', business.theme.surfaceColor);
-    root.style.setProperty('--color-text', business.theme.textColor);
-    root.style.setProperty('--color-text-muted', business.theme.mutedTextColor);
-    root.style.setProperty('--border-radius', business.theme.borderRadius);
-    root.style.setProperty('--hero-base-color', business.hero?.backgroundColor || business.theme.backgroundColor);
-    root.style.setProperty('--hero-background-blur', `${business.hero?.backgroundBlurPx ?? Number.parseInt(blurPixels[business.hero?.backgroundBlur || 'none'] || '0', 10)}px`);
-    root.style.setProperty('--hero-background-image-blur', `${business.hero?.backgroundImageBlurPx ?? Number.parseInt(blurPixels[business.hero?.backgroundImageBlur || 'sm'] || '2', 10)}px`);
-    root.style.setProperty('--hero-overlay-image', business.hero?.backgroundOverlayImageUrl ? `url(\"${business.hero.backgroundOverlayImageUrl}\")` : 'none');
-    root.style.setProperty('--hero-overlay-image-opacity', String(business.hero?.backgroundOverlayImageOpacity ?? .28));
-    root.style.setProperty('--hero-gradient', heroGradientValue(business.hero));
-    root.style.setProperty('--hero-gradient-style', business.hero?.gradientStyle || 'brand-glow');
-    root.style.setProperty('--hero-texture-opacity', String(business.hero?.textureOpacity ?? .035));
-    const font = getFontById(business.theme.fontOptionId);
-    root.style.setProperty('--font-family', business.theme.fontFamily || font.family);
-    document.title = business.seo?.title || `${business.name} - ${business.tagline}`;
-  }, [business]);
-  const sections = business.sections || { stats:true, about:true, services:true, pricing:true, whyChooseUs:true, gallery:true, testimonials:true, process:true, faq:true, location:true, cta:true };
-  return <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{backgroundColor:business.theme.backgroundColor}}>
-    <LoadingScreen business={business} /><JsonLdScript business={business}/><DevPanel currentBusiness={business} onSelectBusiness={handleBusinessChange}/><Navbar business={business}/>
-    <main key={previewRevision} className="grow"><Hero key={business.hero?.layoutVariant || 'split'} business={business}/>
-      {sections.stats !== false && business.statistics?.length > 0 && <Stats business={business}/>} {sections.about !== false && <About business={business}/>} {sections.services !== false && business.services?.length > 0 && <Services business={business}/>} {sections.pricing !== false && business.pricingPackages?.length > 0 && <Pricing business={business}/>} {sections.whyChooseUs !== false && business.whyChooseUs?.length > 0 && <WhyChooseUs business={business}/>} {sections.gallery !== false && business.gallery?.length > 0 && <Gallery business={business}/>} {sections.testimonials !== false && business.testimonials?.length > 0 && <Testimonials business={business}/>} {sections.process !== false && business.process?.length > 0 && <Process business={business}/>} {sections.faq !== false && business.faqs?.length > 0 && <FAQ business={business}/>} {sections.location !== false && <Location business={business}/>} {sections.cta !== false && <CTA business={business}/>}</main>
-    <Footer business={business}/><MobileBottomNav business={business}/><WhatsAppButton business={business}/><ScrollToTop primaryColor={business.theme.primaryColor}/>
+    root.style.setProperty('--color-primary', previewBusiness.theme.primaryColor);
+    root.style.setProperty('--color-primary-hover', previewBusiness.theme.primaryHover);
+    root.style.setProperty('--color-secondary', previewBusiness.theme.secondaryColor);
+    root.style.setProperty('--color-accent', previewBusiness.theme.accentColor);
+    root.style.setProperty('--color-background', previewBusiness.theme.backgroundColor);
+    root.style.setProperty('--color-surface', previewBusiness.theme.surfaceColor);
+    root.style.setProperty('--color-text', previewBusiness.theme.textColor);
+    root.style.setProperty('--color-text-muted', previewBusiness.theme.mutedTextColor);
+    root.style.setProperty('--border-radius', previewBusiness.theme.borderRadius);
+    root.style.setProperty('--hero-base-color', previewBusiness.hero?.backgroundColor || previewBusiness.theme.backgroundColor);
+    root.style.setProperty('--hero-background-blur', `${previewBusiness.hero?.backgroundBlurPx ?? Number.parseInt(blurPixels[previewBusiness.hero?.backgroundBlur || 'none'] || '0', 10)}px`);
+    root.style.setProperty('--hero-background-image-blur', `${previewBusiness.hero?.backgroundImageBlurPx ?? Number.parseInt(blurPixels[previewBusiness.hero?.backgroundImageBlur || 'sm'] || '2', 10)}px`);
+    root.style.setProperty('--hero-overlay-image', previewBusiness.hero?.backgroundOverlayImageUrl ? `url(\"${previewBusiness.hero.backgroundOverlayImageUrl}\")` : 'none');
+    root.style.setProperty('--hero-overlay-image-opacity', String(previewBusiness.hero?.backgroundOverlayImageOpacity ?? .28));
+    root.style.setProperty('--hero-gradient', heroGradientValue(previewBusiness.hero));
+    root.style.setProperty('--hero-gradient-style', previewBusiness.hero?.gradientStyle || 'brand-glow');
+    root.style.setProperty('--hero-texture-opacity', String(previewBusiness.hero?.textureOpacity ?? .035));
+    const font = getFontById(previewBusiness.theme.fontOptionId);
+    root.style.setProperty('--font-family', previewBusiness.theme.fontFamily || font.family);
+    document.title = previewBusiness.seo?.title || `${previewBusiness.name} - ${previewBusiness.tagline}`;
+  }, [previewBusiness]);
+
+  const sections = previewBusiness.sections || { stats:true, about:true, services:true, pricing:true, whyChooseUs:true, gallery:true, testimonials:true, process:true, faq:true, location:true, cta:true };
+  return <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{backgroundColor:previewBusiness.theme.backgroundColor}}>
+    <LoadingScreen business={previewBusiness} /><JsonLdScript business={previewBusiness}/><DevPanel currentBusiness={business} onSelectBusiness={handleBusinessChange}/><Navbar business={previewBusiness}/>
+    <main key={previewRevision} className="grow"><Hero key={previewBusiness.hero?.layoutVariant || 'split'} business={previewBusiness}/>
+      {sections.stats !== false && previewBusiness.statistics?.length > 0 && <Stats business={previewBusiness}/>} {sections.about !== false && <About business={previewBusiness}/>} {sections.services !== false && previewBusiness.services?.length > 0 && <Services business={previewBusiness}/>} {sections.pricing !== false && previewBusiness.pricingPackages?.length > 0 && <Pricing business={previewBusiness}/>} {sections.whyChooseUs !== false && previewBusiness.whyChooseUs?.length > 0 && <WhyChooseUs business={previewBusiness}/>} {sections.gallery !== false && previewBusiness.gallery?.length > 0 && <Gallery business={previewBusiness}/>} {sections.testimonials !== false && previewBusiness.testimonials?.length > 0 && <Testimonials business={previewBusiness}/>} {sections.process !== false && previewBusiness.process?.length > 0 && <Process business={previewBusiness}/>} {sections.faq !== false && previewBusiness.faqs?.length > 0 && <FAQ business={previewBusiness}/>} {sections.location !== false && <Location business={previewBusiness}/>} {sections.cta !== false && <CTA business={previewBusiness}/>}</main>
+    <Footer business={previewBusiness}/><MobileBottomNav business={previewBusiness}/><WhatsAppButton business={previewBusiness}/><ScrollToTop primaryColor={previewBusiness.theme.primaryColor}/>
   </div>;
 }
