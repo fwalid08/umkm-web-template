@@ -1,4 +1,4 @@
-import { BusinessConfig } from '../../types/business';
+import { BusinessConfig, HeroLayoutVariant, NavigationConfig, GalleryItem } from '../../types/business';
 import { bengkelTemplate } from './bengkel';
 import { laundryTemplate } from './laundry';
 import { barbershopTemplate } from './barbershop';
@@ -6,69 +6,22 @@ import { restaurantTemplate } from './restaurant';
 import { jasaTemplate } from './jasa';
 
 export { bengkelTemplate, laundryTemplate, barbershopTemplate, restaurantTemplate, jasaTemplate };
-
-export interface TemplateDefinition {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  icon: string;
-  accentColor: string;
-  heroVariant: 'centered' | 'card-left' | 'card-right' | 'background-focus' | 'minimal' | 'editorial' | 'image-split' | 'floating-card' | 'spotlight' | 'bottom-bar';
-  template: BusinessConfig;
-}
-
-export const templateList: TemplateDefinition[] = [
-  {
-    id: 'bengkel',
-    name: 'Bengkel Sepeda Motor',
-    category: 'Otomotif & Servis',
-    description: 'Template realistis untuk bengkel motor/mobil, servis injeksi, ganti oli, CVT, dan perbaikan bergaransi.',
-    icon: 'Wrench',
-    accentColor: '#DC2626',
-    heroVariant: 'card-left',
-    template: bengkelTemplate,
-  },
-  {
-    id: 'laundry',
-    name: 'Laundry Kiloan & Dry Clean',
-    category: 'Jasa Cuci & Pakaian',
-    description: 'Template untuk laundry kiloan, satuan, bed cover, sepatu, express, serta layanan antar jemput.',
-    icon: 'Sparkles',
-    accentColor: '#0284C7',
-    heroVariant: 'centered',
-    template: laundryTemplate,
-  },
-  {
-    id: 'barbershop',
-    name: 'Barbershop & Men’s Studio',
-    category: 'Potong Rambut & Grooming',
-    description: 'Template barbershop modern dengan layanan haircut, beard trim, grooming, paket membership, dan booking.',
-    icon: 'Scissors',
-    accentColor: '#D97706',
-    heroVariant: 'card-right',
-    template: barbershopTemplate,
-  },
-  {
-    id: 'restaurant',
-    name: 'Restoran, Cafe & Katering',
-    category: 'Kuliner & F&B',
-    description: 'Template untuk rumah makan, cafe, saung, menu unggulan, reservasi meja, takeaway, dan katering.',
-    icon: 'Utensils',
-    accentColor: '#16A34A',
-    heroVariant: 'background-focus',
-    template: restaurantTemplate,
-  },
-  {
-    id: 'jasa',
-    name: 'Jasa Panggilan & Service AC',
-    category: 'Home & Maintenance Service',
-    description: 'Template untuk teknisi AC, listrik, plumbing, perbaikan rumah, dan jasa panggilan dengan booking WhatsApp.',
-    icon: 'Droplets',
-    accentColor: '#2563EB',
-    heroVariant: 'card-left',
-    template: jasaTemplate,
-  },
+export interface TemplateDefinition { id:string; name:string; category:string; description:string; icon:string; accentColor:string; heroVariant:HeroLayoutVariant; template:BusinessConfig; }
+const nav=(brandName:string,links:NavigationConfig['links']):NavigationConfig=>({brandName,showTopMicroBar:true,showMobileBottomNav:true,ctaButtonText:'Booking WhatsApp',topNavMaxVisible:5,links});
+const make=(template:BusinessConfig,heroVariant:HeroLayoutVariant,navigation:NavigationConfig,gallery:GalleryItem[]):BusinessConfig=>({...template,hero:{...(template.hero||{}),layoutVariant:heroVariant,headline:template.hero?.headline||template.heroHeadline,description:template.hero?.description||template.heroDescription,primaryCtaText:template.hero?.primaryCtaText||template.primaryCtaText,secondaryCtaText:template.hero?.secondaryCtaText||template.secondaryCtaText,backgroundImageUrl:template.hero?.backgroundImageUrl||template.heroImageUrl},theme:{...template.theme,heroVariant},navigation, gallery:gallery.length?gallery:template.gallery});
+const bengkel=make(bengkelTemplate,'split',nav('Bengkel Jaya Motor',[{name:'Beranda',href:'#beranda',iconName:'Home',showInTopNav:true,showInBottomNav:true},{name:'Tentang',href:'#tentang',iconName:'Info',showInTopNav:true},{name:'Layanan',href:'#layanan',iconName:'Wrench',showInTopNav:true,showInBottomNav:true},{name:'Harga',href:'#harga',iconName:'Tag',showInTopNav:true},{name:'Galeri',href:'#galeri',iconName:'Image',showInTopNav:true},{name:'Testimoni',href:'#testimoni',iconName:'Star',showInTopNav:true},{name:'Lokasi',href:'#lokasi',iconName:'MapPin',showInTopNav:true,showInBottomNav:true},{name:'FAQ',href:'#faq',iconName:'HelpCircle',showInTopNav:true}]),[
+{id:'bengkel-g1',title:'Area Servis & Lift Motor',category:'Fasilitas',imageUrl:'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1000&q=80',description:'Area kerja bersih dengan peralatan servis harian.'},{id:'bengkel-g2',title:'Teknisi Melakukan Pemeriksaan',category:'Aktivitas',imageUrl:'https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=1000&q=80',description:'Pemeriksaan kendaraan dilakukan sebelum estimasi pekerjaan.'},{id:'bengkel-g3',title:'Servis Mesin & Injeksi',category:'Aktivitas',imageUrl:'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=80',description:'Perawatan mesin, injeksi, dan sistem kendaraan.'}]);
+const laundry=make(laundryTemplate,'centered',nav('Klin Laundry Express',[{name:'Beranda',href:'#beranda',iconName:'Home',showInTopNav:true,showInBottomNav:true},{name:'Layanan',href:'#layanan',iconName:'Sparkles',showInTopNav:true,showInBottomNav:true},{name:'Harga',href:'#harga',iconName:'Tag',showInTopNav:true},{name:'Proses',href:'#proses',iconName:'Clock',showInTopNav:true},{name:'FAQ',href:'#faq',iconName:'HelpCircle',showInTopNav:true},{name:'Lokasi',href:'#lokasi',iconName:'MapPin',showInTopNav:true,showInBottomNav:true}]),[
+{id:'laundry-g1',title:'Proses Cuci Higienis',category:'Proses',imageUrl:'https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=1000&q=80',description:'Pakaian diproses dengan mesin modern dan dipisahkan.'},{id:'laundry-g2',title:'Area Packing',category:'Fasilitas',imageUrl:'https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&w=1000&q=80',description:'Pakaian selesai dicuci, dikeringkan, disetrika, lalu dipacking rapi.'}]);
+const barbershop=make(barbershopTemplate,'card-overlay',nav('BarberKing Studio',[{name:'Beranda',href:'#beranda',iconName:'Home',showInTopNav:true,showInBottomNav:true},{name:'Layanan',href:'#layanan',iconName:'Scissors',showInTopNav:true,showInBottomNav:true},{name:'Harga',href:'#harga',iconName:'Tag',showInTopNav:true},{name:'Lookbook',href:'#galeri',iconName:'Image',showInTopNav:true},{name:'Testimoni',href:'#testimoni',iconName:'Star',showInTopNav:true},{name:'Lokasi',href:'#lokasi',iconName:'MapPin',showInTopNav:true,showInBottomNav:true}]),barbershopTemplate.gallery);
+const restaurant=make(restaurantTemplate,'card-overlay',nav('Dapur Saung Rasa',[{name:'Beranda',href:'#beranda',iconName:'Home',showInTopNav:true,showInBottomNav:true},{name:'Menu',href:'#layanan',iconName:'Utensils',showInTopNav:true,showInBottomNav:true},{name:'Paket',href:'#harga',iconName:'Tag',showInTopNav:true},{name:'Galeri',href:'#galeri',iconName:'Image',showInTopNav:true},{name:'Ulasan',href:'#testimoni',iconName:'Star',showInTopNav:true},{name:'Lokasi',href:'#lokasi',iconName:'MapPin',showInTopNav:true,showInBottomNav:true}]),restaurantTemplate.gallery);
+const jasa=make(jasaTemplate,'split',nav('Teknisi Siaga',[{name:'Beranda',href:'#beranda',iconName:'Home',showInTopNav:true,showInBottomNav:true},{name:'Layanan',href:'#layanan',iconName:'Wrench',showInTopNav:true,showInBottomNav:true},{name:'Harga',href:'#harga',iconName:'Tag',showInTopNav:true},{name:'Cara Kerja',href:'#proses',iconName:'Clock',showInTopNav:true},{name:'Testimoni',href:'#testimoni',iconName:'Star',showInTopNav:true},{name:'Lokasi',href:'#lokasi',iconName:'MapPin',showInTopNav:true,showInBottomNav:true}]),[
+{id:'jasa-g1',title:'Teknisi Service AC',category:'Pekerjaan',imageUrl:'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1000&q=80',description:'Teknisi memeriksa kondisi unit sebelum pekerjaan.'},{id:'jasa-g2',title:'Perawatan Unit AC',category:'Pekerjaan',imageUrl:'https://images.unsplash.com/photo-1631545806609-2f4d7d2d2b50?auto=format&fit=crop&w=1000&q=80',description:'Pembersihan dan perawatan rutin untuk menjaga performa.'}]);
+export const templateList:TemplateDefinition[]=[
+{id:'bengkel',name:'Bengkel Sepeda Motor',category:'Otomotif & Servis',description:'Bengkel realistis untuk servis rutin, injeksi, CVT, ganti oli, dan perbaikan kendaraan.',icon:'Wrench',accentColor:'#DC2626',heroVariant:'split',template:bengkel},
+{id:'laundry',name:'Laundry Kiloan & Dry Clean',category:'Jasa Cuci & Pakaian',description:'Laundry dengan antar-jemput, express, kiloan, bedcover, dan layanan perawatan pakaian.',icon:'Sparkles',accentColor:'#0284C7',heroVariant:'centered',template:laundry},
+{id:'barbershop',name:'Barbershop & Men’s Studio',category:'Potong Rambut & Grooming',description:'Barbershop modern dengan haircut, beard trim, coloring, grooming, dan booking.',icon:'Scissors',accentColor:'#D97706',heroVariant:'card-overlay',template:barbershop},
+{id:'restaurant',name:'Restoran, Cafe & Katering',category:'Kuliner & F&B',description:'Template kuliner untuk menu, reservasi, paket katering, galeri makanan, dan lokasi.',icon:'Utensils',accentColor:'#16A34A',heroVariant:'card-overlay',template:restaurant},
+{id:'jasa',name:'Jasa Panggilan & Service AC',category:'Home & Maintenance Service',description:'Jasa teknisi panggilan untuk AC, listrik, plumbing, dan perawatan rumah.',icon:'Droplets',accentColor:'#2563EB',heroVariant:'split',template:jasa},
 ];
-
-export const getTemplateById = (id: string): BusinessConfig => templateList.find((t) => t.id === id)?.template || bengkelTemplate;
+export const getTemplateById=(id:string):BusinessConfig=>templateList.find(t=>t.id===id)?.template||bengkel;
