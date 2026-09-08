@@ -42,6 +42,8 @@ export type SectionId = 'stats' | 'about' | 'services' | 'pricing' | 'whyChooseU
 export interface SectionVisibilityConfig { stats?: boolean; about?: boolean; services?: boolean; pricing?: boolean; whyChooseUs?: boolean; gallery?: boolean; testimonials?: boolean; process?: boolean; faq?: boolean; location?: boolean; cta?: boolean; }
 export interface SectionConfig { id: SectionId; enabled?: boolean; }
 export interface PageSectionsConfig { order?: SectionId[]; items?: Partial<Record<SectionId, SectionConfig>>; }
+export type WebsiteTemplateId = 'modern-local-business' | 'service-first';
+export type IndustryPresetId = 'automotive' | 'restaurant' | 'retail' | 'professional';
 
 export interface NavItem { name: string; href: string; iconName?: string; badge?: string; showInBottomNav?: boolean; showInTopNav?: boolean; }
 export interface NavigationConfig { brandName?: string; brandSubtitle?: string; links: NavItem[]; showTopMicroBar?: boolean; showMobileBottomNav?: boolean; ctaButtonText?: string; topNavMaxVisible?: number; }
@@ -51,6 +53,7 @@ export interface ContactConfig { phone: string; whatsappNumber: string; email: s
 export interface BusinessConfig {
   id: string; name: string; industry: string; tagline: string; heroHeadline: string; heroDescription: string; primaryCtaText: string; secondaryCtaText: string;
   logoUrl?: string; heroImageUrl: string; aboutImageUrl: string; ctaBannerImageUrl?: string; sections?: SectionVisibilityConfig; pageSections?: PageSectionsConfig; navigation?: NavigationConfig;
+  templateId?: WebsiteTemplateId; industryPresetId?: IndustryPresetId;
   aboutText: { p1: string; p2: string; highlights: string[]; experienceYears: number; };
   statistics: StatisticItem[]; services: ServiceItem[]; pricingPackages: PricingPackage[]; whyChooseUs: WhyChooseUsItem[]; gallery: GalleryItem[]; testimonials: TestimonialItem[]; process: ProcessStep[]; faqs: FaqItem[]; openingHours: OpeningHour[]; socialLinks: SocialLink[];
   contact: ContactConfig; theme: ThemeConfig; seo: SeoConfig; hero?: HeroConfig; locationSection?: LocationSectionConfig; ctaSection?: CtaSectionConfig; footerSection?: FooterSectionConfig;
