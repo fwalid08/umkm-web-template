@@ -1,20 +1,14 @@
 import { HeroConfig, HeroGradientStyle, HeroLayoutVariant, HeroBackgroundMode, HeroTextureType, HeroBackgroundType } from '../types/business';
+
 export interface HeroLayoutOption { id: HeroLayoutVariant; name: string; subtitle: string; description: string; bestFor: string; }
 export const heroLayoutOptions: HeroLayoutOption[] = [
-  { id:'centered', name:'1. Centered 1 Kolom', subtitle:'Headline fokus di tengah', description:'Komposisi satu kolom yang bersih dengan visual pendukung di bawah konten.', bestFor:'Cafe, bakery, laundry, retail' },
-  { id:'card-left', name:'2. 2 Kolom — Card Kiri', subtitle:'Card konten di kiri', description:'Card informasi berada di kiri dan visual bisnis menjadi penyeimbang di kanan.', bestFor:'Bengkel, jasa, rental, service' },
-  { id:'card-right', name:'3. 2 Kolom — Card Kanan', subtitle:'Card konten di kanan', description:'Visual lebih dominan di kiri, card CTA dan informasi berada di kanan.', bestFor:'Kuliner, salon, properti, produk' },
-  { id:'background-focus', name:'4. Background Focus', subtitle:'Foto sebagai atmosfer', description:'Foto penuh dengan overlay untuk membangun kesan kuat sejak first impression.', bestFor:'Travel, kuliner, hospitality' },
-  { id:'minimal', name:'5. Minimal', subtitle:'Ringkas dan cepat', description:'Headline, deskripsi, dan CTA tanpa elemen dekoratif berlebihan.', bestFor:'Jasa profesional, freelancer' },
-  { id:'editorial', name:'6. Editorial', subtitle:'Tipografi sebagai fokus', description:'Headline besar dengan whitespace dan detail visual editorial.', bestFor:'Fashion, creative, agency, brand' },
-  { id:'image-split', name:'7. Image Split', subtitle:'Visual setengah layar', description:'Konten clean di satu sisi dan foto bisnis dominan di sisi lainnya.', bestFor:'Restaurant, beauty, property, product' },
-  { id:'floating-card', name:'8. Floating Card', subtitle:'Card mengambang di atas visual', description:'Foto penuh dengan panel informasi yang terasa premium dan modern.', bestFor:'Service, rental, studio' },
-  { id:'spotlight', name:'9. Spotlight', subtitle:'Brand spotlight', description:'Konten terpusat dengan ambient glow untuk menonjolkan identitas brand.', bestFor:'Tech, startup, modern UMKM' },
-  { id:'bottom-bar', name:'10. Bottom Bar', subtitle:'CTA dan trust di bagian bawah', description:'Visual hero luas dengan informasi kepercayaan dan CTA pada area bawah.', bestFor:'Booking, rental, event, service' },
+  { id:'centered', name:'1. Centered', subtitle:'Konten fokus di tengah', description:'Hero satu kolom yang bersih, kuat untuk headline dan CTA.', bestFor:'Cafe, laundry, retail, jasa' },
+  { id:'split', name:'2. Split', subtitle:'Konten kiri + visual kanan', description:'Komposisi dua kolom yang seimbang antara informasi dan foto bisnis.', bestFor:'Bengkel, service, rental, profesional' },
+  { id:'card-overlay', name:'3. Card Overlay', subtitle:'Card di atas foto', description:'Foto menjadi background utama dengan card informasi yang premium.', bestFor:'Barbershop, kuliner, hospitality, brand' },
 ];
 export interface HeroBackgroundOption { id: HeroBackgroundType; name: string; description: string; }
 export const heroBackgroundOptions: HeroBackgroundOption[] = [
-  { id:'color', name:'Solid Color', description:'Background hanya menggunakan warna.' },
+  { id:'color', name:'Solid Color', description:'Background menggunakan warna theme.' },
   { id:'image', name:'Full Image', description:'Foto menjadi visual utama.' },
   { id:'image-overlay', name:'Image + Overlay', description:'Foto dipadukan overlay agar teks tetap terbaca.' },
 ];
@@ -40,19 +34,11 @@ export const heroTextureOptions: { id: HeroTextureType; name: string }[] = [
 ];
 const shared = { backgroundImageOpacity:.34, overlayColor:'#0B0F19', overlayOpacity:.68, overlayGradient:true, contentMaxWidth:'lg' as const, minHeight:'large' as const };
 export const heroVariantPresets: Record<HeroLayoutVariant, HeroConfig> = {
-  centered:{...shared,layoutVariant:'centered',backgroundType:'color',backgroundColor:'#FFFFFF',backgroundMode:'light',gradientStyle:'clean-subtle',overlayOpacity:0,overlayGradient:false,contentAlign:'center',textTheme:'dark',showTrustPoints:false,showRatingPill:true},
-  'card-left':{...shared,layoutVariant:'card-left',backgroundType:'image-overlay',backgroundColor:'#0B0F19',backgroundMode:'dark',gradientStyle:'dark-slate',overlayOpacity:.72,contentAlign:'left',textTheme:'light',showTrustPoints:true,showRatingPill:true,showFloatingStats:true},
-  'card-right':{...shared,layoutVariant:'card-right',backgroundType:'image-overlay',backgroundColor:'#0B0F19',backgroundMode:'dark',gradientStyle:'dark-slate',overlayOpacity:.58,contentAlign:'left',textTheme:'light',showTrustPoints:true,showRatingPill:true},
-  'background-focus':{...shared,layoutVariant:'background-focus',backgroundType:'image-overlay',backgroundColor:'#0B0F19',backgroundMode:'dark',gradientStyle:'dark-slate',backgroundImageOpacity:.48,overlayOpacity:.62,contentAlign:'left',textTheme:'light',showTrustPoints:true},
-  minimal:{...shared,layoutVariant:'minimal',backgroundType:'color',backgroundColor:'#F8FAFC',backgroundMode:'light',gradientStyle:'clean-subtle',overlayOpacity:0,overlayGradient:false,contentAlign:'left',contentMaxWidth:'md',textTheme:'dark',showTrustPoints:false},
-  editorial:{...shared,layoutVariant:'editorial',backgroundType:'color',backgroundColor:'#FAFAF9',backgroundMode:'light',gradientStyle:'clean-subtle',overlayOpacity:0,overlayGradient:false,contentAlign:'left',contentMaxWidth:'xl',textTheme:'dark',showTrustPoints:false},
-  'image-split':{...shared,layoutVariant:'image-split',backgroundType:'color',backgroundColor:'#FFFFFF',backgroundMode:'light',gradientStyle:'clean-subtle',overlayOpacity:0,overlayGradient:false,contentAlign:'left',contentMaxWidth:'md',textTheme:'dark',showTrustPoints:false},
-  'floating-card':{...shared,layoutVariant:'floating-card',backgroundType:'image-overlay',backgroundColor:'#0F172A',backgroundMode:'dark',gradientStyle:'dark-slate',backgroundImageOpacity:.38,overlayOpacity:.64,contentAlign:'left',textTheme:'light',showTrustPoints:true,showFloatingStats:true},
-  spotlight:{...shared,layoutVariant:'spotlight',backgroundType:'color',backgroundColor:'#0B0F19',backgroundMode:'dark',gradientStyle:'brand-glow',overlayOpacity:0,overlayGradient:false,contentAlign:'center',contentMaxWidth:'md',textTheme:'light',showTrustPoints:false,showRatingPill:true},
-  'bottom-bar':{...shared,layoutVariant:'bottom-bar',backgroundType:'image-overlay',backgroundColor:'#0B0F19',backgroundMode:'dark',gradientStyle:'dark-slate',backgroundImageOpacity:.42,overlayOpacity:.64,contentAlign:'left',textTheme:'light',showTrustPoints:false,showRatingPill:true},
-  split:{...shared,layoutVariant:'split',backgroundType:'image-overlay',backgroundColor:'#0B0F19',backgroundMode:'dark',gradientStyle:'dark-slate',backgroundImageOpacity:.28,overlayOpacity:.76,contentAlign:'left',textTheme:'light',showTrustPoints:true,showRatingPill:true,showFloatingStats:true},
-  'card-overlay':{...shared,layoutVariant:'card-overlay',backgroundType:'image-overlay',backgroundColor:'#0B0F19',backgroundMode:'dark',gradientStyle:'dark-slate',backgroundImageOpacity:.72,overlayOpacity:.1,contentAlign:'left',textTheme:'light',showTrustPoints:true},
+  centered:{...shared,layoutVariant:'centered',backgroundType:'color',backgroundColor:'#FFFFFF',backgroundMode:'light',gradientStyle:'clean-subtle',overlayOpacity:0,overlayGradient:false,contentAlign:'center',textTheme:'dark',showTrustPoints:false,showRatingPill:true,showFloatingStats:false},
+  split:{...shared,layoutVariant:'split',backgroundType:'image-overlay',backgroundColor:'#0B0F19',backgroundMode:'dark',gradientStyle:'dark-slate',overlayOpacity:.72,contentAlign:'left',textTheme:'light',showTrustPoints:true,showRatingPill:true,showFloatingStats:true},
+  'card-overlay':{...shared,layoutVariant:'card-overlay',backgroundType:'image-overlay',backgroundColor:'#0B0F19',backgroundMode:'dark',gradientStyle:'dark-slate',backgroundImageOpacity:.72,overlayOpacity:.22,contentAlign:'left',textTheme:'light',showTrustPoints:true,showRatingPill:true,showFloatingStats:false},
 };
 export const heroConfig: HeroConfig = {
-  ...heroVariantPresets['card-left'], eyebrowText:'BENGKEL JAYA MOTOR', badgeText:'Spesialis Servis Injeksi & Matic Bergaransi', headline:'Solusi Terpercaya Perawatan Motor Anda di Kota Banjar', description:'Layanan servis motor profesional, transparan, dan bergaransi untuk kebutuhan harian Anda.', primaryCtaText:'Booking Servis via WhatsApp', secondaryCtaText:'Lihat Daftar Layanan', ctaNote:'Respon admin cepat • Tanpa biaya booking', trustBadgeText:'⭐ 4.9/5 dari 1.200+ pelanggan', trustPoints:['Teknisi berpengalaman & terlatih','Suku cadang asli & bergaransi','Estimasi biaya transparan','Prioritas antrean booking'], ratingValue:'4.9/5', ratingLabel:'Google Reviews', floatingStats:[{value:'10+',label:'Tahun pengalaman'},{value:'1.200+',label:'Motor / bulan'}], backgroundImageUrl:'', backgroundImageAlt:'Bengkel Jaya Motor', backgroundImageBlur:'sm', backgroundImagePosition:'center',
+  ...heroVariantPresets.split,
+  eyebrowText:'BENGKEL JAYA MOTOR', badgeText:'Spesialis Servis Injeksi & Matic Bergaransi', headline:'Solusi Terpercaya Perawatan Motor Anda di Kota Banjar', description:'Layanan servis motor profesional, transparan, dan bergaransi untuk kebutuhan harian Anda.', primaryCtaText:'Booking Servis via WhatsApp', secondaryCtaText:'Lihat Daftar Layanan', ctaNote:'Respon admin cepat • Tanpa biaya booking', trustBadgeText:'⭐ 4.9/5 dari 1.200+ pelanggan', trustPoints:['Teknisi berpengalaman & terlatih','Suku cadang asli & bergaransi','Estimasi biaya transparan','Prioritas antrean booking'], ratingValue:'4.9/5', ratingLabel:'Google Reviews', floatingStats:[{value:'10+',label:'Tahun pengalaman'},{value:'1.200+',label:'Motor / bulan'}], backgroundImageUrl:'', backgroundImageAlt:'Bengkel Jaya Motor', backgroundImageBlur:'sm', backgroundImagePosition:'center',
 };
