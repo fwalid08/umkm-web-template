@@ -1,5 +1,5 @@
 import React from 'react';
-import type { BusinessConfig } from '../types/business';
+import type { BusinessConfig, SectionId } from '../types/business';
 import { Stats } from '../components/Stats';
 import { About } from '../components/About';
 import { Services } from '../components/Services';
@@ -12,7 +12,7 @@ import { FAQ } from '../components/FAQ';
 import { Location } from '../components/Location';
 import { CTA } from '../components/CTA';
 
-export type SectionId = keyof NonNullable<BusinessConfig['sections']>;
+export type { SectionId };
 
 type SectionDefinition = {
   id: SectionId;
@@ -20,6 +20,11 @@ type SectionDefinition = {
   render: (business: BusinessConfig) => React.ReactNode;
   isAvailable?: (business: BusinessConfig) => boolean;
 };
+
+export const defaultSectionOrder: readonly SectionId[] = [
+  'stats', 'about', 'services', 'pricing', 'whyChooseUs', 'gallery',
+  'testimonials', 'process', 'faq', 'location', 'cta',
+];
 
 export const sectionRegistry: readonly SectionDefinition[] = [
   { id: 'stats', label: 'Stats', render: business => <Stats business={business} />, isAvailable: business => business.statistics.length > 0 },
@@ -35,11 +40,39 @@ export const sectionRegistry: readonly SectionDefinition[] = [
   { id: 'cta', label: 'CTA', render: business => <CTA business={business} /> },
 ];
 
-export function renderSections(business: BusinessConfig) {
-  const visibility = business.sections || {};
+const registryById = new Map(sectionRegistry.map(section => [section.id, section]));
 
-  return sectionRegistry
-    .filter(section => visibility[section.id] !== false)
+export function resolveSectionOrder(business: BusinessConfig): SectionId[] {
+  const configuredOrder = business.pageSections?.order;
+  if (!configuredOrder?.length) return [...defaultSectionOrder];
+
+  const result: SectionId[] = [];
+  const seen = new Set<SectionId>();
+
+  for (const id of configuredOrder) {
+    if (!registryById.has(id) || seen.has(id)) continue;
+    result.push(id);
+    seen.add(id);
+  }
+
+  for (const id of defaultSectionOrder) {
+    if (!seen.has(id)) result.push(id);
+  }
+
+  return result;
+}
+
+export function isSectionEnabled(business: BusinessConfig, id: SectionId): boolean {
+  const item = business.pageSections?.items?.[id];
+  if (item?.enabled !== undefined) return item.enabled;
+  return business.sections?.[id] !== false;
+}
+
+export function renderSections(business: BusinessConfig) {
+  return resolveSectionOrder(business)
+    .map(id => registryById.get(id))
+    .filter((section): section is SectionDefinition => Boolean(section))
+    .filter(section => isSectionEnabled(business, section.id))
     .filter(section => section.isAvailable?.(business) ?? true)
     .map(section => <React.Fragment key={section.id}>{section.render(business)}</React.Fragment>);
 }
