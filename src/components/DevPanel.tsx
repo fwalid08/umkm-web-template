@@ -68,7 +68,7 @@ export const DevPanel:React.FC<DevPanelProps>=({currentBusiness,onSelectBusiness
     {tab!=='hero' && (
       <div className="space-y-3">{Object.entries(active).map(([k,v])=><Field key={k} label={k} value={v} path={[k]} onChange={onChange} onDelete={onDelete}/>)}</div>
     )}
-    </main><footer className="flex shrink-0 flex-wrap gap-2 border-t bg-white p-3"><button type="button" onClick={exportAll} className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-2 text-[9px] font-bold text-white"><Download className="h-3 w-3"/>Generate Full Config</button><button type="button" onClick={()=>{navigator.clipboard.writeText(JSON.stringify(currentBusiness,null,2));flash('JSON tersalin')}} className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-[9px] font-bold"><Copy className="h-3 w-3"/>Copy JSON</button>{msg&&<span className="ml-auto rounded-lg bg-emerald-50 px-3 py-2 text-[9px] font-bold text-emerald-700">{msg}</span>}</footer></aside></div>}
+    </main><footer className="flex shrink-0 flex-wrap gap-2 border-t bg-white p-3"><button type="button" onClick={exportAll} className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-2 text-[9px] font-bold text-white"><Download className="h-3 w-3"/>Generate Full Config</button><button type="button" onClick={()=>{navigator.clipboard.writeText(JSON.stringify(currentBusiness,null,2));flash('JSON tersalin')}} className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-[9px] font-bold"><Copy className="h-3 w-3"/>Copy JSON</button>{msg&&<span className="ml-auto rounded-lg bg-emerald-50 px-3 py-2 text-[9px] font-bold text-emerald-700">{msg}</span>}</footer></div></aside></div>}
   </>;
 };
 
