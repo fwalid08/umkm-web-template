@@ -2,7 +2,7 @@ import React from 'react';
 import { BusinessConfig, HeroConfig } from '../types/business';
 import { generateWhatsAppLink } from '../lib/whatsapp';
 import { WhatsAppIcon } from './common/WhatsAppIcon';
-import { ArrowRight, Star, ShieldCheck, MapPin, CheckCircle2, Clock, Phone, Sparkles, Calendar, ChevronRight } from 'lucide-react';
+import { ArrowRight, Star, CheckCircle2, Sparkles, ChevronRight } from 'lucide-react';
 
 interface HeroProps { business: BusinessConfig; }
 
@@ -57,10 +57,15 @@ const HeroBackground: React.FC<{ business: BusinessConfig; isDark: boolean }> = 
     <div className={`absolute top-0 inset-x-0 h-px ${isDark ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-slate-900/10 to-transparent'}`} />
     {orbsEnabled && <><div className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full blur-3xl" style={{ backgroundColor: orb1Color, opacity: orbOpacity }} /><div className="absolute top-1/4 -right-28 w-[28rem] h-[28rem] rounded-full blur-3xl" style={{ backgroundColor: orb2Color, opacity: orbOpacity * .85 }} /></>}
     {showBgImage && bgImg && <div className="absolute inset-0"><img src={bgImg} alt="" className={`w-full h-full object-cover object-center scale-105 transform ${blurClass}`} style={{ opacity: imgOpacity, mixBlendMode: isDark ? 'screen' : 'multiply' }} /><div className={`absolute inset-0 ${isDark ? 'bg-gradient-to-b from-slate-950/75 via-slate-900/85 to-slate-950' : 'bg-gradient-to-b from-white/90 via-white/75 to-slate-100/60'}`} /></div>}
-    {texture === 'dots' && <div className="absolute inset-0 opacity-[.035]" style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '18px 18px' }} />}
-    {texture === 'grid' && <div className="absolute inset-0 opacity-[.03]" style={{ backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg,currentColor 1px,transparent 1px)', backgroundSize: '28px 28px' }} />}
+    {texture === 'dots' && <div className="absolute inset-0" style={{ opacity: textureOpacity, backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '18px 18px' }} />}
+    {texture === 'grid' && <div className="absolute inset-0" style={{ opacity: textureOpacity, backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg,currentColor 1px,transparent 1px)', backgroundSize: '28px 28px' }} />}
   </div>;
 };
+
+const defaultFloatingStats = [
+  { value: '1.200+', label: 'Pelanggan' },
+  { value: '4.9/5', label: 'Rating' },
+];
 
 export const Hero: React.FC<HeroProps> = ({ business }) => {
   const hero = business.hero || ({ layoutVariant: 'split' } as HeroConfig);
@@ -74,21 +79,22 @@ export const Hero: React.FC<HeroProps> = ({ business }) => {
   const whatsappLink = generateWhatsAppLink(business.contact.whatsappNumber, business.contact.defaultWhatsAppMessage);
   const ratingVisible = hero.showRatingPill !== false;
   const trustVisible = hero.showTrustPoints !== false;
-  const statsVisible = hero.showFloatingStats === true && (hero.floatingStats?.length || 0) > 0;
+  const stats = hero.floatingStats?.length ? hero.floatingStats : defaultFloatingStats;
+  const statsVisible = hero.showFloatingStats === true;
 
-  const content = <div className={`relative z-10 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+  const content = <div className={`relative z-10 ${isDark ? 'text-white' : 'text-slate-900'} ${layout === 'centered' ? 'mx-auto flex max-w-4xl flex-col items-center text-center' : ''}`}>
     {hero.eyebrowText && <div className="mb-3 text-xs font-bold uppercase tracking-[.16em] opacity-70">{hero.eyebrowText}</div>}
     {hero.badgeText && <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-current/15 bg-white/10 px-3 py-1 text-xs font-semibold"><Sparkles size={13} />{hero.badgeText}</div>}
     <h1 className="max-w-4xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">{headline}</h1>
     <p className="mt-5 max-w-2xl text-sm leading-7 opacity-75 sm:text-base">{description}</p>
-    <div className="mt-7 flex flex-wrap gap-3">
+    <div className={`mt-7 flex flex-wrap gap-3 ${layout === 'centered' ? 'justify-center' : ''}`}>
       <a href={whatsappLink} className="inline-flex items-center gap-2 rounded-xl bg-[var(--color-primary)] px-5 py-3 text-sm font-extrabold text-white shadow-lg">{primaryCtaText}<ArrowRight size={16} /></a>
       {secondaryCtaText && <a href={hero.secondaryCtaUrl || '#tentang'} className="inline-flex items-center gap-2 rounded-xl border border-current/15 bg-white/10 px-5 py-3 text-sm font-bold">{secondaryCtaText}<ChevronRight size={16} /></a>}
     </div>
     {hero.ctaNote && <p className="mt-3 text-xs opacity-60">{hero.ctaNote}</p>}
-    {trustVisible && <div className="mt-7 grid gap-2 text-xs font-semibold sm:grid-cols-2">{trustPoints.map((point, i) => <div key={`${point}-${i}`} className="flex items-center gap-2"><CheckCircle2 size={15} className="shrink-0 text-[var(--color-primary)]" /><span>{point}</span></div>)}</div>}
+    {trustVisible && <div className={`mt-7 grid w-full max-w-2xl gap-2 text-xs font-semibold sm:grid-cols-2 ${layout === 'centered' ? 'text-left' : ''}`}>{trustPoints.map((point, i) => <div key={`${point}-${i}`} className="flex items-center gap-2"><CheckCircle2 size={15} className="shrink-0 text-[var(--color-primary)]" /><span>{point}</span></div>)}</div>}
     {ratingVisible && <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-current/10 bg-white/10 px-3 py-2 text-xs"><Star size={14} fill="currentColor" /> <b>{hero.ratingValue || '4.9 / 5.0'}</b><span className="opacity-60">{hero.ratingLabel || 'Ulasan pelanggan'}</span></div>}
-    {statsVisible && <div className="mt-6 grid grid-cols-2 gap-3 sm:max-w-md">{hero.floatingStats!.map((stat, i) => <div key={i} className="rounded-2xl border border-current/10 bg-white/10 p-4"><b className="block text-xl">{stat.value}</b><span className="text-xs opacity-65">{stat.label}</span></div>)}</div>}
+    {statsVisible && <div className="mt-6 grid w-full max-w-md grid-cols-2 gap-3">{stats.map((stat, i) => <div key={`${stat.label}-${i}`} className="rounded-2xl border border-current/10 bg-white/10 p-4 text-left backdrop-blur-sm"><b className="block text-xl">{stat.value}</b><span className="text-xs opacity-65">{stat.label}</span></div>)}</div>}
   </div>;
 
   return <section id="beranda" className={`relative isolate overflow-hidden ${hero.minHeight === 'auto' ? 'py-20' : hero.minHeight === 'large' ? 'min-h-[720px]' : 'min-h-screen'} flex items-center`}>
