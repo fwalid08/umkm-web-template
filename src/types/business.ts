@@ -24,10 +24,11 @@ export interface HeroConfig {
   primaryCtaText?: string; primaryCtaUrl?: string; secondaryCtaText?: string; secondaryCtaUrl?: string; ctaNote?: string;
   trustBadgeText?: string; trustPoints?: string[]; showTrustPoints?: boolean; showRatingPill?: boolean; ratingValue?: string; ratingLabel?: string;
   showFloatingStats?: boolean; floatingStats?: HeroStatItem[]; backgroundType?: HeroBackgroundType; backgroundColor?: string; backgroundMode?: HeroBackgroundMode;
-  backgroundBlur?: HeroBlurLevel;
+  backgroundBlur?: HeroBlurLevel; backgroundBlurPx?: number;
   gradientStyle?: HeroGradientStyle; customGradient?: HeroCustomGradient; ambientOrbs?: HeroAmbientOrbsConfig; texture?: HeroTextureType; textureOpacity?: number;
-  showBackgroundImageOverlay?: boolean; backgroundImageUrl?: string; backgroundImageAlt?: string; backgroundImageOpacity?: number;
-  backgroundImageBlur?: HeroBlurLevel; backgroundImagePosition?: string; overlayColor?: string; overlayOpacity?: number; overlayGradient?: boolean;
+  showBackgroundImageOverlay?: boolean; backgroundImageUrl?: string; backgroundImageAlt?: string; backgroundImageOpacity?: number; backgroundImageBlur?: HeroBlurLevel; backgroundImageBlurPx?: number; backgroundImagePosition?: string;
+  backgroundOverlayImageUrl?: string; backgroundOverlayImageOpacity?: number;
+  overlayColor?: string; overlayOpacity?: number; overlayGradient?: boolean;
   minHeight?: 'auto' | 'screen' | 'large'; contentAlign?: 'left' | 'center'; contentMaxWidth?: 'sm' | 'md' | 'lg' | 'xl'; textTheme?: 'auto' | 'light' | 'dark'; accentText?: string;
 }
 export type FontOptionId = 'plus-jakarta' | 'outfit' | 'dm-sans' | 'poppins' | 'inter';
