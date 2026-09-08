@@ -9,7 +9,7 @@ export interface TestimonialItem { id: string; name: string; roleOrVehicle?: str
 export interface ProcessStep { step: number; title: string; description: string; iconName: string; }
 export interface FaqItem { id: string; question: string; answer: string; category?: string; }
 
-export type HeroLayoutVariant = 'split' | 'centered' | 'background-focus' | 'card-overlay' | 'minimal';
+export type HeroLayoutVariant = 'split' | 'centered' | 'background-focus' | 'card-overlay' | 'minimal' | 'editorial' | 'image-split' | 'floating-card' | 'spotlight' | 'bottom-bar';
 export type HeroVariant = HeroLayoutVariant;
 export type HeroGradientStyle = 'brand-glow' | 'aurora-mesh' | 'sunset-radiant' | 'ocean-depth' | 'emerald-nature' | 'dark-slate' | 'clean-subtle' | 'custom' | 'solid';
 export type HeroBackgroundMode = 'auto' | 'light' | 'dark';
@@ -18,9 +18,27 @@ export type HeroBackgroundType = 'color' | 'image' | 'image-overlay';
 
 export interface HeroCustomGradient { from: string; via?: string; to: string; direction?: 'to-b' | 'to-br' | 'to-r' | 'to-tr' | 'radial'; }
 export interface HeroAmbientOrbsConfig { enabled?: boolean; color1?: string; color2?: string; opacity?: number; blur?: 'sm' | 'md' | 'lg' | 'xl'; }
+export interface HeroStatItem { value: string; label: string; }
 
 export interface HeroConfig {
   layoutVariant: HeroLayoutVariant;
+  eyebrowText?: string;
+  badgeText?: string;
+  headline?: string;
+  description?: string;
+  primaryCtaText?: string;
+  primaryCtaUrl?: string;
+  secondaryCtaText?: string;
+  secondaryCtaUrl?: string;
+  ctaNote?: string;
+  trustBadgeText?: string;
+  trustPoints?: string[];
+  showTrustPoints?: boolean;
+  showRatingPill?: boolean;
+  ratingValue?: string;
+  ratingLabel?: string;
+  showFloatingStats?: boolean;
+  floatingStats?: HeroStatItem[];
   backgroundType?: HeroBackgroundType;
   backgroundColor?: string;
   backgroundMode?: HeroBackgroundMode;
@@ -31,6 +49,7 @@ export interface HeroConfig {
   textureOpacity?: number;
   showBackgroundImageOverlay?: boolean;
   backgroundImageUrl?: string;
+  backgroundImageAlt?: string;
   backgroundImageOpacity?: number;
   backgroundImageBlur?: 'none' | 'sm' | 'md' | 'lg';
   backgroundImagePosition?: string;
@@ -39,11 +58,9 @@ export interface HeroConfig {
   overlayGradient?: boolean;
   minHeight?: 'auto' | 'screen' | 'large';
   contentAlign?: 'left' | 'center';
-  badgeText?: string;
-  trustBadgeText?: string;
-  trustPoints?: string[];
-  showFloatingStats?: boolean;
-  showRatingPill?: boolean;
+  contentMaxWidth?: 'sm' | 'md' | 'lg' | 'xl';
+  textTheme?: 'auto' | 'light' | 'dark';
+  accentText?: string;
 }
 
 export type FontOptionId = 'plus-jakarta' | 'outfit' | 'dm-sans' | 'poppins' | 'inter';
