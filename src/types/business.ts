@@ -36,7 +36,13 @@ export interface FontOption { id: FontOptionId; name: string; family: string; ca
 export interface LocationSectionConfig { badgeText?: string; title?: string; description?: string; addressTitle?: string; hoursTitle?: string; openTodayBadgeText?: string; supportTitle?: string; directionsButtonText?: string; askDirectionsButtonText?: string; askDirectionsMessage?: string; features?: string[]; }
 export interface CtaSectionConfig { badgeText?: string; headline?: string; description?: string; primaryButtonText?: string; secondaryButtonText?: string; disclaimerText?: string; customWhatsAppMessage?: string; }
 export interface FooterSectionConfig { aboutText?: string; quickLinksTitle?: string; servicesTitle?: string; contactTitle?: string; copyrightText?: string; badgeText?: string; taglineNote?: string; paymentMethodsTitle?: string; paymentMethods?: string[]; }
+
+/** Ordered page sections. Omitted entries fall back to the registry's defaults. */
+export type SectionId = 'stats' | 'about' | 'services' | 'pricing' | 'whyChooseUs' | 'gallery' | 'testimonials' | 'process' | 'faq' | 'location' | 'cta';
 export interface SectionVisibilityConfig { stats?: boolean; about?: boolean; services?: boolean; pricing?: boolean; whyChooseUs?: boolean; gallery?: boolean; testimonials?: boolean; process?: boolean; faq?: boolean; location?: boolean; cta?: boolean; }
+export interface SectionConfig { id: SectionId; enabled?: boolean; }
+export interface PageSectionsConfig { order?: SectionId[]; items?: Partial<Record<SectionId, SectionConfig>>; }
+
 export interface NavItem { name: string; href: string; iconName?: string; badge?: string; showInBottomNav?: boolean; showInTopNav?: boolean; }
 export interface NavigationConfig { brandName?: string; brandSubtitle?: string; links: NavItem[]; showTopMicroBar?: boolean; showMobileBottomNav?: boolean; ctaButtonText?: string; topNavMaxVisible?: number; }
 export interface ThemeConfig { primaryColor: string; primaryHover: string; secondaryColor: string; accentColor: string; backgroundColor: string; surfaceColor: string; textColor: string; mutedTextColor: string; borderRadius: string; whatsappColor?: string; heroVariant?: HeroVariant; fontOptionId?: FontOptionId; fontFamily?: string; fontHeading?: string; fontBody?: string; }
@@ -44,7 +50,7 @@ export interface SeoConfig { title: string; description: string; keywords: strin
 export interface ContactConfig { phone: string; whatsappNumber: string; email: string; address: string; city: string; province: string; postalCode?: string; googleMapsUrl: string; googleMapsEmbedUrl?: string; defaultWhatsAppMessage: string; }
 export interface BusinessConfig {
   id: string; name: string; industry: string; tagline: string; heroHeadline: string; heroDescription: string; primaryCtaText: string; secondaryCtaText: string;
-  logoUrl?: string; heroImageUrl: string; aboutImageUrl: string; ctaBannerImageUrl?: string; sections?: SectionVisibilityConfig; navigation?: NavigationConfig;
+  logoUrl?: string; heroImageUrl: string; aboutImageUrl: string; ctaBannerImageUrl?: string; sections?: SectionVisibilityConfig; pageSections?: PageSectionsConfig; navigation?: NavigationConfig;
   aboutText: { p1: string; p2: string; highlights: string[]; experienceYears: number; };
   statistics: StatisticItem[]; services: ServiceItem[]; pricingPackages: PricingPackage[]; whyChooseUs: WhyChooseUsItem[]; gallery: GalleryItem[]; testimonials: TestimonialItem[]; process: ProcessStep[]; faqs: FaqItem[]; openingHours: OpeningHour[]; socialLinks: SocialLink[];
   contact: ContactConfig; theme: ThemeConfig; seo: SeoConfig; hero?: HeroConfig; locationSection?: LocationSectionConfig; ctaSection?: CtaSectionConfig; footerSection?: FooterSectionConfig;
