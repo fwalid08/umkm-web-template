@@ -9,7 +9,9 @@ export interface TestimonialItem { id: string; name: string; roleOrVehicle?: str
 export interface ProcessStep { step: number; title: string; description: string; iconName: string; }
 export interface FaqItem { id: string; question: string; answer: string; category?: string; }
 
-export type HeroLayoutVariant = 'centered' | 'card-left' | 'card-right' | 'background-focus' | 'minimal' | 'editorial' | 'image-split' | 'floating-card' | 'spotlight' | 'bottom-bar';
+// split/card-overlay remain accepted for backwards compatibility with older template data.
+// They are intentionally hidden from the new 10-option Hero UI.
+export type HeroLayoutVariant = 'centered' | 'card-left' | 'card-right' | 'background-focus' | 'minimal' | 'editorial' | 'image-split' | 'floating-card' | 'spotlight' | 'bottom-bar' | 'split' | 'card-overlay';
 export type HeroVariant = HeroLayoutVariant;
 export type HeroGradientStyle = 'brand-glow' | 'aurora-mesh' | 'sunset-radiant' | 'ocean-depth' | 'emerald-nature' | 'dark-slate' | 'clean-subtle' | 'custom' | 'solid';
 export type HeroBackgroundMode = 'auto' | 'light' | 'dark';
@@ -19,48 +21,16 @@ export type HeroBackgroundType = 'color' | 'image' | 'image-overlay';
 export interface HeroCustomGradient { from: string; via?: string; to: string; direction?: 'to-b' | 'to-br' | 'to-r' | 'to-tr' | 'radial'; }
 export interface HeroAmbientOrbsConfig { enabled?: boolean; color1?: string; color2?: string; opacity?: number; blur?: 'sm' | 'md' | 'lg' | 'xl'; }
 export interface HeroStatItem { value: string; label: string; }
-
 export interface HeroConfig {
   layoutVariant: HeroLayoutVariant;
-  eyebrowText?: string;
-  badgeText?: string;
-  headline?: string;
-  description?: string;
-  primaryCtaText?: string;
-  primaryCtaUrl?: string;
-  secondaryCtaText?: string;
-  secondaryCtaUrl?: string;
-  ctaNote?: string;
-  trustBadgeText?: string;
-  trustPoints?: string[];
-  showTrustPoints?: boolean;
-  showRatingPill?: boolean;
-  ratingValue?: string;
-  ratingLabel?: string;
-  showFloatingStats?: boolean;
-  floatingStats?: HeroStatItem[];
-  backgroundType?: HeroBackgroundType;
-  backgroundColor?: string;
-  backgroundMode?: HeroBackgroundMode;
-  gradientStyle?: HeroGradientStyle;
-  customGradient?: HeroCustomGradient;
-  ambientOrbs?: HeroAmbientOrbsConfig;
-  texture?: HeroTextureType;
-  textureOpacity?: number;
-  showBackgroundImageOverlay?: boolean;
-  backgroundImageUrl?: string;
-  backgroundImageAlt?: string;
-  backgroundImageOpacity?: number;
-  backgroundImageBlur?: 'none' | 'sm' | 'md' | 'lg';
-  backgroundImagePosition?: string;
-  overlayColor?: string;
-  overlayOpacity?: number;
-  overlayGradient?: boolean;
-  minHeight?: 'auto' | 'screen' | 'large';
-  contentAlign?: 'left' | 'center';
-  contentMaxWidth?: 'sm' | 'md' | 'lg' | 'xl';
-  textTheme?: 'auto' | 'light' | 'dark';
-  accentText?: string;
+  eyebrowText?: string; badgeText?: string; headline?: string; description?: string;
+  primaryCtaText?: string; primaryCtaUrl?: string; secondaryCtaText?: string; secondaryCtaUrl?: string; ctaNote?: string;
+  trustBadgeText?: string; trustPoints?: string[]; showTrustPoints?: boolean; showRatingPill?: boolean; ratingValue?: string; ratingLabel?: string;
+  showFloatingStats?: boolean; floatingStats?: HeroStatItem[]; backgroundType?: HeroBackgroundType; backgroundColor?: string; backgroundMode?: HeroBackgroundMode;
+  gradientStyle?: HeroGradientStyle; customGradient?: HeroCustomGradient; ambientOrbs?: HeroAmbientOrbsConfig; texture?: HeroTextureType; textureOpacity?: number;
+  showBackgroundImageOverlay?: boolean; backgroundImageUrl?: string; backgroundImageAlt?: string; backgroundImageOpacity?: number;
+  backgroundImageBlur?: 'none' | 'sm' | 'md' | 'lg'; backgroundImagePosition?: string; overlayColor?: string; overlayOpacity?: number; overlayGradient?: boolean;
+  minHeight?: 'auto' | 'screen' | 'large'; contentAlign?: 'left' | 'center'; contentMaxWidth?: 'sm' | 'md' | 'lg' | 'xl'; textTheme?: 'auto' | 'light' | 'dark'; accentText?: string;
 }
 
 export type FontOptionId = 'plus-jakarta' | 'outfit' | 'dm-sans' | 'poppins' | 'inter';
@@ -74,11 +44,9 @@ export interface NavigationConfig { brandName?: string; brandSubtitle?: string; 
 export interface ThemeConfig { primaryColor: string; primaryHover: string; secondaryColor: string; accentColor: string; backgroundColor: string; surfaceColor: string; textColor: string; mutedTextColor: string; borderRadius: string; whatsappColor?: string; heroVariant?: HeroVariant; fontOptionId?: FontOptionId; fontFamily?: string; fontHeading?: string; fontBody?: string; }
 export interface SeoConfig { title: string; description: string; keywords: string[]; ogImage: string; canonicalUrl: string; schemaType: 'AutomotiveBusiness' | 'LocalBusiness' | 'DryCleaningOrLaundry' | 'Restaurant' | 'HairSalon' | 'HomeAndConstructionBusiness'; }
 export interface ContactConfig { phone: string; whatsappNumber: string; email: string; address: string; city: string; province: string; postalCode?: string; googleMapsUrl: string; googleMapsEmbedUrl?: string; defaultWhatsAppMessage: string; }
-
 export interface BusinessConfig {
   id: string; name: string; industry: string; tagline: string; heroHeadline: string; heroDescription: string; primaryCtaText: string; secondaryCtaText: string;
-  logoUrl?: string; heroImageUrl: string; aboutImageUrl: string; ctaBannerImageUrl?: string;
-  sections?: SectionVisibilityConfig; navigation?: NavigationConfig;
+  logoUrl?: string; heroImageUrl: string; aboutImageUrl: string; ctaBannerImageUrl?: string; sections?: SectionVisibilityConfig; navigation?: NavigationConfig;
   aboutText: { p1: string; p2: string; highlights: string[]; experienceYears: number; };
   statistics: StatisticItem[]; services: ServiceItem[]; pricingPackages: PricingPackage[]; whyChooseUs: WhyChooseUsItem[]; gallery: GalleryItem[]; testimonials: TestimonialItem[]; process: ProcessStep[]; faqs: FaqItem[]; openingHours: OpeningHour[]; socialLinks: SocialLink[];
   contact: ContactConfig; theme: ThemeConfig; seo: SeoConfig; hero?: HeroConfig; locationSection?: LocationSectionConfig; ctaSection?: CtaSectionConfig; footerSection?: FooterSectionConfig;
