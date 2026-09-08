@@ -24,20 +24,14 @@ import { DevPanel } from './components/DevPanel';
 import { LoadingScreen } from './components/LoadingScreen';
 import { getFontById } from './config/fonts';
 
-const blurPixels: Record<string,string> = { none:'0px', sm:'2px', md:'4px', lg:'8px' };
-const defaultHeroTrustPoints = [
-  'Tenaga Berpengalaman & Terlatih',
-  '100% Suku Cadang & Bahan Terjamin',
-  'Estimasi Biaya Transparan Tanpa Siluman',
-  'Prioritas Antrean Booking WhatsApp',
-];
+const blurPixels: Record<string, string> = { none: '0px', sm: '2px', md: '4px', lg: '8px' };
 
 function heroGradientValue(hero: BusinessConfig['hero']) {
   const style = hero?.gradientStyle || 'brand-glow';
   if (style === 'solid') return 'none';
   if (style === 'custom' && hero?.customGradient) {
     const { from, via, to, direction = 'to-b' } = hero.customGradient;
-    const dir: Record<string,string> = {'to-b':'to bottom','to-br':'to bottom right','to-r':'to right','to-tr':'to top right'};
+    const dir: Record<string, string> = { 'to-b': 'to bottom', 'to-br': 'to bottom right', 'to-r': 'to right', 'to-tr': 'to top right' };
     return direction === 'radial' ? `radial-gradient(circle at 50% 20%, ${from}, ${via ? `${via}, ` : ''}${to})` : `linear-gradient(${dir[direction] || 'to bottom'}, ${from}, ${via ? `${via}, ` : ''}${to})`;
   }
   const dark = hero?.backgroundMode === 'dark' || style === 'dark-slate' || style === 'ocean-depth';
@@ -48,36 +42,8 @@ function heroGradientValue(hero: BusinessConfig['hero']) {
     case 'emerald-nature': return dark ? 'radial-gradient(circle at 20% 15%, rgba(16,185,129,.38), transparent 34%), linear-gradient(135deg, #022c22 0%, #064e3b 48%, #0f172a 100%)' : 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 42%, #ccfbf1 72%, #fff 100%)';
     case 'dark-slate': return 'linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%)';
     case 'clean-subtle': return 'linear-gradient(135deg, #ffffff 0%, #f8fafc 48%, #e2e8f0 100%)';
-    case 'brand-glow':
     default: return dark ? `radial-gradient(circle at 8% 15%, color-mix(in srgb, var(--color-primary) 42%, transparent), transparent 34%), radial-gradient(circle at 90% 20%, color-mix(in srgb, var(--color-accent) 32%, transparent), transparent 32%), linear-gradient(135deg, var(--hero-base-color) 0%, #0f172a 100%)` : `radial-gradient(circle at 8% 15%, color-mix(in srgb, var(--color-primary) 18%, transparent), transparent 34%), radial-gradient(circle at 90% 20%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 32%), linear-gradient(135deg, var(--hero-base-color) 0%, #ffffff 100%)`;
   }
-}
-
-function syncHeroTrustPointVisibility(business: BusinessConfig) {
-  const section = document.getElementById('beranda');
-  if (!section) return;
-
-  section.querySelectorAll<HTMLElement>('[data-config-trust-point-row]').forEach((row) => {
-    row.style.removeProperty('display');
-  });
-
-  if (business.hero?.showTrustPoints !== false) return;
-
-  const points = new Set(
-    business.hero?.trustPoints && business.hero.trustPoints.length > 0
-      ? business.hero.trustPoints.map((point) => point.trim())
-      : defaultHeroTrustPoints
-  );
-
-  Array.from(section.querySelectorAll<HTMLElement>('div')).forEach((element) => {
-    if (element.children.length !== 2) return;
-    const text = element.textContent?.trim() || '';
-    if (!points.has(text)) return;
-    const hasIcon = element.querySelector('svg');
-    if (!hasIcon) return;
-    element.dataset.configTrustPointRow = 'true';
-    element.style.display = 'none';
-  });
 }
 
 export default function App() {
@@ -86,9 +52,7 @@ export default function App() {
 
   const handleBusinessChange = (nextBusiness: BusinessConfig) => {
     setBusiness(nextBusiness);
-    if (nextBusiness.id !== business.id) {
-      setPreviewRevision((revision) => revision + 1);
-    }
+    if (nextBusiness.id !== business.id) setPreviewRevision(revision => revision + 1);
   };
 
   const previewBusiness = normalizeBusinessConfig(business);
@@ -117,16 +81,11 @@ export default function App() {
     document.title = previewBusiness.seo?.title || `${previewBusiness.name} - ${previewBusiness.tagline}`;
   }, [previewBusiness]);
 
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => syncHeroTrustPointVisibility(previewBusiness));
-    return () => window.cancelAnimationFrame(frame);
-  }, [previewBusiness.hero?.showTrustPoints, previewBusiness.hero?.trustPoints, previewRevision]);
-
-  const sections = previewBusiness.sections || { stats:true, about:true, services:true, pricing:true, whyChooseUs:true, gallery:true, testimonials:true, process:true, faq:true, location:true, cta:true };
-  return <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{backgroundColor:previewBusiness.theme.backgroundColor}}>
-    <LoadingScreen business={previewBusiness} /><JsonLdScript business={previewBusiness}/><DevPanel currentBusiness={business} onSelectBusiness={handleBusinessChange}/><Navbar business={previewBusiness}/>
-    <main key={previewRevision} className="grow"><Hero key={previewBusiness.hero?.layoutVariant || 'split'} business={previewBusiness}/>
-      {sections.stats !== false && previewBusiness.statistics?.length > 0 && <Stats business={previewBusiness}/>} {sections.about !== false && <About business={previewBusiness}/>} {sections.services !== false && previewBusiness.services?.length > 0 && <Services business={previewBusiness}/>} {sections.pricing !== false && previewBusiness.pricingPackages?.length > 0 && <Pricing business={previewBusiness}/>} {sections.whyChooseUs !== false && previewBusiness.whyChooseUs?.length > 0 && <WhyChooseUs business={previewBusiness}/>} {sections.gallery !== false && previewBusiness.gallery?.length > 0 && <Gallery business={previewBusiness}/>} {sections.testimonials !== false && previewBusiness.testimonials?.length > 0 && <Testimonials business={previewBusiness}/>} {sections.process !== false && previewBusiness.process?.length > 0 && <Process business={previewBusiness}/>} {sections.faq !== false && previewBusiness.faqs?.length > 0 && <FAQ business={previewBusiness}/>} {sections.location !== false && <Location business={previewBusiness}/>} {sections.cta !== false && <CTA business={previewBusiness}/>}</main>
-    <Footer business={previewBusiness}/><MobileBottomNav business={previewBusiness}/><WhatsAppButton business={previewBusiness}/><ScrollToTop primaryColor={previewBusiness.theme.primaryColor}/>
+  const sections = previewBusiness.sections || { stats: true, about: true, services: true, pricing: true, whyChooseUs: true, gallery: true, testimonials: true, process: true, faq: true, location: true, cta: true };
+  return <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{ backgroundColor: previewBusiness.theme.backgroundColor }}>
+    <LoadingScreen business={previewBusiness} /><JsonLdScript business={previewBusiness} /><DevPanel currentBusiness={business} onSelectBusiness={handleBusinessChange} /><Navbar business={previewBusiness} />
+    <main key={previewRevision} className="grow"><Hero key={previewBusiness.hero?.layoutVariant || 'split'} business={previewBusiness} />
+      {sections.stats !== false && previewBusiness.statistics?.length > 0 && <Stats business={previewBusiness} />} {sections.about !== false && <About business={previewBusiness} />} {sections.services !== false && previewBusiness.services?.length > 0 && <Services business={previewBusiness} />} {sections.pricing !== false && previewBusiness.pricingPackages?.length > 0 && <Pricing business={previewBusiness} />} {sections.whyChooseUs !== false && previewBusiness.whyChooseUs?.length > 0 && <WhyChooseUs business={previewBusiness} />} {sections.gallery !== false && previewBusiness.gallery?.length > 0 && <Gallery business={previewBusiness} />} {sections.testimonials !== false && previewBusiness.testimonials?.length > 0 && <Testimonials business={previewBusiness} />} {sections.process !== false && previewBusiness.process?.length > 0 && <Process business={previewBusiness} />} {sections.faq !== false && previewBusiness.faqs?.length > 0 && <FAQ business={previewBusiness} />} {sections.location !== false && <Location business={previewBusiness} />} {sections.cta !== false && <CTA business={previewBusiness} />}</main>
+    <Footer business={previewBusiness} /><MobileBottomNav business={previewBusiness} /><WhatsAppButton business={previewBusiness} /><ScrollToTop primaryColor={previewBusiness.theme.primaryColor} />
   </div>;
 }
