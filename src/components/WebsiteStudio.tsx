@@ -5,6 +5,7 @@ import { industryPresets, websiteTemplates } from '../config/presets';
 import { generateBusinessConfig } from '../engine/config-generator';
 import { validateBusinessConfig } from '../engine/config-validation';
 import { normalizeBusinessConfig } from '../lib/config-runtime';
+import { normalizeBusinessInput } from '../engine/config-schema';
 import { getFontById } from '../config/fonts';
 import type { BusinessConfig, IndustryPresetId, WebsiteTemplateId } from '../types/business';
 import { Hero } from './Hero';
@@ -68,10 +69,21 @@ export function WebsiteStudio() {
     window.setTimeout(() => setMessage(''), 2200);
   };
 
+  // Apply every generator field directly to the current config so the canvas
+  // is a true live preview instead of waiting for the submit button.
+  const updateForm = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
+    const nextForm = { ...form, [key]: value };
+    setForm(nextForm);
+
+    const nextInput = normalizeBusinessInput(nextForm);
+    const nextBusiness = generateBusinessConfig(nextInput, business);
+    update(nextBusiness);
+  };
+
   const generate = () => {
-    const next = generateBusinessConfig(form, initialBusiness);
+    const next = generateBusinessConfig(normalizeBusinessInput(form), business);
     update(next);
-    notify('Website berhasil dibuat dari konfigurasi baru.');
+    notify('Website berhasil diperbarui.');
   };
 
   const save = () => {
@@ -113,7 +125,7 @@ export function WebsiteStudio() {
           <div><strong>UMKM Studio</strong><span>Website builder sederhana</span></div>
         </div>
         <div className="studio-actions">
-          <span className={`studio-save-state ${saved ? '' : 'is-dirty'}`}>{saved ? 'Tersimpan' : 'Belum disimpan'}</span>
+          <span className={`studio-save-state ${saved ? '' : 'is-dirty'}`}>{saved ? 'Tersimpan' : 'Perubahan belum disimpan'}</span>
           <button className="studio-button studio-button-secondary" onClick={exportConfig}><Download size={15}/> Export</button>
           <button className="studio-button studio-button-primary" onClick={save}><Save size={15}/> Simpan</button>
         </div>
@@ -124,21 +136,21 @@ export function WebsiteStudio() {
           <section className="studio-panel-section studio-generator">
             <div className="studio-heading">
               <div className="studio-heading-icon"><Sparkles size={17}/></div>
-              <div><h2>Buat website</h2><p>Isi informasi dasar. Preview akan diperbarui dari konfigurasi ini.</p></div>
+              <div><h2>Buat website</h2><p>Ubah informasi dasar dan lihat hasilnya langsung di preview.</p></div>
             </div>
 
             <div className="studio-form-group">
-              <label>Nama bisnis<input value={form.name} placeholder="Contoh: Bengkel Maju Jaya" onChange={e => setForm({ ...form, name: e.target.value })}/></label>
-              <label>Industri<input value={form.industry} placeholder="Contoh: Automotive" onChange={e => setForm({ ...form, industry: e.target.value })}/></label>
-              <label>Tagline<input value={form.tagline} placeholder="Tagline bisnis Anda" onChange={e => setForm({ ...form, tagline: e.target.value })}/></label>
+              <label>Nama bisnis<input value={form.name} placeholder="Contoh: Bengkel Maju Jaya" onChange={e => updateForm('name', e.target.value)}/></label>
+              <label>Industri<input value={form.industry} placeholder="Contoh: Automotive" onChange={e => updateForm('industry', e.target.value)}/></label>
+              <label>Tagline<input value={form.tagline} placeholder="Tagline bisnis Anda" onChange={e => updateForm('tagline', e.target.value)}/></label>
             </div>
 
             <div className="studio-select-grid">
-              <label>Template<select value={form.templateId} onChange={e => setForm({ ...form, templateId: e.target.value as WebsiteTemplateId })}>{templateOptions.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
-              <label>Preset<select value={form.industryPresetId} onChange={e => setForm({ ...form, industryPresetId: e.target.value as IndustryPresetId })}>{industryOptions.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
+              <label>Template<select value={form.templateId} onChange={e => updateForm('templateId', e.target.value as WebsiteTemplateId)}>{templateOptions.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
+              <label>Preset<select value={form.industryPresetId} onChange={e => updateForm('industryPresetId', e.target.value as IndustryPresetId)}>{industryOptions.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
             </div>
 
-            <button className="studio-generate" onClick={generate}><WandSparkles size={16}/> Buat website</button>
+            <button className="studio-generate" onClick={generate}><WandSparkles size={16}/> Terapkan konfigurasi</button>
             <button className="studio-reset" onClick={reset}><RotateCcw size={14}/> Mulai dari demo</button>
           </section>
 
@@ -149,7 +161,7 @@ export function WebsiteStudio() {
             {!validation.valid && <div className="studio-warning">Ada {validation.issues.length} konfigurasi yang perlu diperiksa.</div>}
           </section>
 
-          <div className="studio-tip"><Sparkles size={14}/><span><b>Tip:</b> mulai dari 3 informasi utama, lalu gunakan preview untuk melihat hasil website.</span></div>
+          <div className="studio-tip"><Sparkles size={14}/><span><b>Live preview:</b> setiap perubahan pada form langsung diterapkan ke website di sebelah kanan.</span></div>
         </aside>
 
         <main className="studio-canvas">
