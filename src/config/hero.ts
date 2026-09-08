@@ -1,24 +1,25 @@
 import { HeroConfig, HeroGradientStyle, HeroLayoutVariant, HeroBackgroundMode, HeroTextureType, HeroBackgroundType } from '../types/business';
 
 export interface HeroLayoutOption { id: HeroLayoutVariant; name: string; subtitle: string; description: string; bestFor: string; }
+
 export const heroLayoutOptions: HeroLayoutOption[] = [
-  { id: 'split', name: '1. Split', subtitle: 'Konten kiri, visual kanan', description: 'Komposisi dua kolom yang seimbang dengan CTA dan visual bisnis.', bestFor: 'Bengkel, jasa teknis, rental' },
-  { id: 'centered', name: '2. Centered', subtitle: 'Fokus headline di tengah', description: 'Hero simetris dengan hierarchy tipografi yang kuat.', bestFor: 'Cafe, restoran, bakery, retail' },
-  { id: 'background-focus', name: '3. Background Focus', subtitle: 'Foto sebagai atmosfer', description: 'Foto penuh dengan overlay kontras terkontrol.', bestFor: 'Travel, kuliner, hotel, fotografi' },
-  { id: 'card-overlay', name: '4. Card Overlay', subtitle: 'Konten dalam glass card', description: 'Konten premium di atas visual dengan blur ringan.', bestFor: 'Salon, spa, studio, barbershop' },
-  { id: 'minimal', name: '5. Minimal', subtitle: 'Ringkas dan cepat', description: 'Fokus pada headline, deskripsi, dan CTA.', bestFor: 'Jasa profesional, freelancer' },
-  { id: 'editorial', name: '6. Editorial', subtitle: 'Tipografi sebagai fokus', description: 'Headline besar dengan layout editorial modern dan whitespace.', bestFor: 'Brand, fashion, creative, agency' },
-  { id: 'image-split', name: '7. Image Split', subtitle: 'Visual setengah layar', description: 'Foto dominan satu sisi dengan konten clean di sisi lainnya.', bestFor: 'Restaurant, product, beauty, property' },
-  { id: 'floating-card', name: '8. Floating Card', subtitle: 'Visual + card mengambang', description: 'Visual penuh dengan kartu informasi kecil yang menonjol.', bestFor: 'Service, rental, hospitality' },
-  { id: 'spotlight', name: '9. Spotlight', subtitle: 'Brand spotlight', description: 'Konten terpusat dengan radial glow halus untuk aksen brand.', bestFor: 'Tech, startup, modern UMKM' },
-  { id: 'bottom-bar', name: '10. Bottom Bar', subtitle: 'CTA sticky di dalam hero', description: 'Hero visual bersih dengan CTA dan trust information pada bar bawah.', bestFor: 'Booking, rental, event, service' },
+  { id: 'centered', name: '1. Centered 1 Kolom', subtitle: 'Headline fokus di tengah', description: 'Komposisi satu kolom yang bersih dengan visual pendukung di bawah konten.', bestFor: 'Cafe, bakery, laundry, retail' },
+  { id: 'card-left', name: '2. 2 Kolom — Card Kiri', subtitle: 'Card konten di kiri', description: 'Card informasi berada di kiri dan visual bisnis menjadi penyeimbang di kanan.', bestFor: 'Bengkel, jasa, rental, service' },
+  { id: 'card-right', name: '3. 2 Kolom — Card Kanan', subtitle: 'Card konten di kanan', description: 'Visual lebih dominan di kiri, card CTA dan informasi berada di kanan.', bestFor: 'Kuliner, salon, properti, produk' },
+  { id: 'background-focus', name: '4. Background Focus', subtitle: 'Foto sebagai atmosfer', description: 'Foto penuh dengan overlay untuk membangun kesan kuat sejak first impression.', bestFor: 'Travel, kuliner, hospitality' },
+  { id: 'minimal', name: '5. Minimal', subtitle: 'Ringkas dan cepat', description: 'Headline, deskripsi, dan CTA tanpa elemen dekoratif berlebihan.', bestFor: 'Jasa profesional, freelancer' },
+  { id: 'editorial', name: '6. Editorial', subtitle: 'Tipografi sebagai fokus', description: 'Headline besar dengan whitespace dan detail visual editorial.', bestFor: 'Fashion, creative, agency, brand' },
+  { id: 'image-split', name: '7. Image Split', subtitle: 'Visual setengah layar', description: 'Konten clean di satu sisi dan foto bisnis dominan di sisi lainnya.', bestFor: 'Restaurant, beauty, property, product' },
+  { id: 'floating-card', name: '8. Floating Card', subtitle: 'Card mengambang di atas visual', description: 'Foto penuh dengan panel informasi yang terasa premium dan modern.', bestFor: 'Service, rental, studio' },
+  { id: 'spotlight', name: '9. Spotlight', subtitle: 'Brand spotlight', description: 'Konten terpusat dengan ambient glow untuk menonjolkan identitas brand.', bestFor: 'Tech, startup, modern UMKM' },
+  { id: 'bottom-bar', name: '10. Bottom Bar', subtitle: 'CTA dan trust di bagian bawah', description: 'Visual hero luas dengan informasi kepercayaan dan CTA pada area bawah.', bestFor: 'Booking, rental, event, service' },
 ];
 
 export interface HeroBackgroundOption { id: HeroBackgroundType; name: string; description: string; }
 export const heroBackgroundOptions: HeroBackgroundOption[] = [
   { id: 'color', name: 'Solid Color', description: 'Background hanya menggunakan warna.' },
   { id: 'image', name: 'Full Image', description: 'Foto menjadi visual utama.' },
-  { id: 'image-overlay', name: 'Image + Overlay', description: 'Foto dipadukan overlay untuk menjaga kontras teks.' },
+  { id: 'image-overlay', name: 'Image + Overlay', description: 'Foto dipadukan overlay agar teks tetap terbaca.' },
 ];
 
 export interface HeroGradientOption { id: HeroGradientStyle; name: string; description: string; previewColors: string[]; suggestedMode: HeroBackgroundMode; }
@@ -44,21 +45,23 @@ export const heroTextureOptions: { id: HeroTextureType; name: string }[] = [
   { id: 'none', name: 'None' }, { id: 'dots', name: 'Dots' }, { id: 'grid', name: 'Grid' }, { id: 'mesh', name: 'Mesh' },
 ];
 
+const shared = { backgroundImageOpacity: .34, overlayColor: '#0B0F19', overlayOpacity: .68, overlayGradient: true, contentMaxWidth: 'lg' as const, minHeight: 'large' as const };
+
 export const heroVariantPresets: Record<HeroLayoutVariant, HeroConfig> = {
-  split: { layoutVariant:'split', backgroundType:'image-overlay', backgroundColor:'#0B0F19', backgroundMode:'dark', gradientStyle:'dark-slate', backgroundImageOpacity:.28, overlayColor:'#0B0F19', overlayOpacity:.76, overlayGradient:true, contentAlign:'left', contentMaxWidth:'lg', textTheme:'light', showTrustPoints:true, showRatingPill:true, showFloatingStats:true },
-  centered: { layoutVariant:'centered', backgroundType:'color', backgroundColor:'#FFFFFF', backgroundMode:'light', gradientStyle:'clean-subtle', overlayOpacity:0, overlayGradient:false, contentAlign:'center', contentMaxWidth:'lg', textTheme:'dark', showTrustPoints:false, showRatingPill:true },
-  'background-focus': { layoutVariant:'background-focus', backgroundType:'image-overlay', backgroundColor:'#0B0F19', backgroundMode:'dark', gradientStyle:'dark-slate', backgroundImageOpacity:.48, overlayColor:'#0B0F19', overlayOpacity:.62, overlayGradient:true, contentAlign:'left', contentMaxWidth:'lg', textTheme:'light', showTrustPoints:true },
-  'card-overlay': { layoutVariant:'card-overlay', backgroundType:'image', backgroundColor:'#0B0F19', backgroundMode:'dark', gradientStyle:'dark-slate', backgroundImageOpacity:.72, overlayOpacity:.1, overlayGradient:false, contentAlign:'left', contentMaxWidth:'lg', textTheme:'light', showTrustPoints:true },
-  minimal: { layoutVariant:'minimal', backgroundType:'color', backgroundColor:'#F8FAFC', backgroundMode:'light', gradientStyle:'clean-subtle', overlayOpacity:0, overlayGradient:false, contentAlign:'left', contentMaxWidth:'md', textTheme:'dark', showTrustPoints:false },
-  editorial: { layoutVariant:'editorial', backgroundType:'color', backgroundColor:'#FAFAF9', backgroundMode:'light', gradientStyle:'clean-subtle', overlayOpacity:0, overlayGradient:false, contentAlign:'left', contentMaxWidth:'xl', textTheme:'dark', showTrustPoints:false },
-  'image-split': { layoutVariant:'image-split', backgroundType:'color', backgroundColor:'#FFFFFF', backgroundMode:'light', gradientStyle:'clean-subtle', overlayOpacity:0, overlayGradient:false, contentAlign:'left', contentMaxWidth:'md', textTheme:'dark', showTrustPoints:false },
-  'floating-card': { layoutVariant:'floating-card', backgroundType:'image-overlay', backgroundColor:'#0F172A', backgroundMode:'dark', gradientStyle:'dark-slate', backgroundImageOpacity:.38, overlayColor:'#0F172A', overlayOpacity:.64, overlayGradient:true, contentAlign:'left', contentMaxWidth:'lg', textTheme:'light', showTrustPoints:true, showFloatingStats:true },
-  spotlight: { layoutVariant:'spotlight', backgroundType:'color', backgroundColor:'#0B0F19', backgroundMode:'dark', gradientStyle:'brand-glow', overlayOpacity:0, overlayGradient:false, contentAlign:'center', contentMaxWidth:'md', textTheme:'light', showTrustPoints:false, showRatingPill:true },
-  'bottom-bar': { layoutVariant:'bottom-bar', backgroundType:'image-overlay', backgroundColor:'#0B0F19', backgroundMode:'dark', gradientStyle:'dark-slate', backgroundImageOpacity:.42, overlayColor:'#0B0F19', overlayOpacity:.64, overlayGradient:true, contentAlign:'left', contentMaxWidth:'lg', textTheme:'light', showTrustPoints:false, showRatingPill:true },
+  centered: { ...shared, layoutVariant:'centered', backgroundType:'color', backgroundColor:'#FFFFFF', backgroundMode:'light', gradientStyle:'clean-subtle', overlayOpacity:0, overlayGradient:false, contentAlign:'center', textTheme:'dark', showTrustPoints:false, showRatingPill:true },
+  'card-left': { ...shared, layoutVariant:'card-left', backgroundType:'image-overlay', backgroundColor:'#0B0F19', backgroundMode:'dark', gradientStyle:'dark-slate', overlayColor:'#0B0F19', overlayOpacity:.72, contentAlign:'left', textTheme:'light', showTrustPoints:true, showRatingPill:true, showFloatingStats:true },
+  'card-right': { ...shared, layoutVariant:'card-right', backgroundType:'image-overlay', backgroundColor:'#0B0F19', backgroundMode:'dark', gradientStyle:'dark-slate', overlayColor:'#0B0F19', overlayOpacity:.58, contentAlign:'left', textTheme:'light', showTrustPoints:true, showRatingPill:true },
+  'background-focus': { ...shared, layoutVariant:'background-focus', backgroundType:'image-overlay', backgroundColor:'#0B0F19', backgroundMode:'dark', gradientStyle:'dark-slate', backgroundImageOpacity:.48, overlayColor:'#0B0F19', overlayOpacity:.62, contentAlign:'left', textTheme:'light', showTrustPoints:true },
+  minimal: { ...shared, layoutVariant:'minimal', backgroundType:'color', backgroundColor:'#F8FAFC', backgroundMode:'light', gradientStyle:'clean-subtle', overlayOpacity:0, overlayGradient:false, contentAlign:'left', contentMaxWidth:'md', textTheme:'dark', showTrustPoints:false },
+  editorial: { ...shared, layoutVariant:'editorial', backgroundType:'color', backgroundColor:'#FAFAF9', backgroundMode:'light', gradientStyle:'clean-subtle', overlayOpacity:0, overlayGradient:false, contentAlign:'left', contentMaxWidth:'xl', textTheme:'dark', showTrustPoints:false },
+  'image-split': { ...shared, layoutVariant:'image-split', backgroundType:'color', backgroundColor:'#FFFFFF', backgroundMode:'light', gradientStyle:'clean-subtle', overlayOpacity:0, overlayGradient:false, contentAlign:'left', contentMaxWidth:'md', textTheme:'dark', showTrustPoints:false },
+  'floating-card': { ...shared, layoutVariant:'floating-card', backgroundType:'image-overlay', backgroundColor:'#0F172A', backgroundMode:'dark', gradientStyle:'dark-slate', backgroundImageOpacity:.38, overlayColor:'#0F172A', overlayOpacity:.64, contentAlign:'left', textTheme:'light', showTrustPoints:true, showFloatingStats:true },
+  spotlight: { ...shared, layoutVariant:'spotlight', backgroundType:'color', backgroundColor:'#0B0F19', backgroundMode:'dark', gradientStyle:'brand-glow', overlayOpacity:0, overlayGradient:false, contentAlign:'center', contentMaxWidth:'md', textTheme:'light', showTrustPoints:false, showRatingPill:true },
+  'bottom-bar': { ...shared, layoutVariant:'bottom-bar', backgroundType:'image-overlay', backgroundColor:'#0B0F19', backgroundMode:'dark', gradientStyle:'dark-slate', backgroundImageOpacity:.42, overlayColor:'#0B0F19', overlayOpacity:.64, contentAlign:'left', textTheme:'light', showTrustPoints:false, showRatingPill:true },
 };
 
 export const heroConfig: HeroConfig = {
-  ...heroVariantPresets.split,
+  ...heroVariantPresets['card-left'],
   eyebrowText: 'BENGKEL JAYA MOTOR',
   badgeText: 'Spesialis Servis Injeksi & Matic Bergaransi',
   headline: 'Solusi Terpercaya Perawatan Motor Anda di Kota Banjar',
