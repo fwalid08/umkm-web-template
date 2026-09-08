@@ -1,25 +1,35 @@
 import { BusinessConfig, HeroConfig } from '../types/business';
 
 /**
- * Normalizes the configuration consumed by renderers.
- *
- * The project still keeps a few legacy top-level Hero fields for backwards
- * compatibility with existing presets. The generator edits `business.hero`,
- * so the live preview must receive the Hero values from that same source.
+ * Keeps the renderer contract simple: the nested `hero` object is the source
+ * of truth for Hero content, while legacy top-level fields remain synchronized
+ * for presets/export compatibility.
  */
 export function normalizeBusinessConfig(input: BusinessConfig): BusinessConfig {
-  const hero: HeroConfig | undefined = input.hero
-    ? { ...input.hero }
-    : undefined;
+  const fallback = input.hero || ({
+    layoutVariant: input.theme.heroVariant || 'split',
+    headline: input.heroHeadline,
+    description: input.heroDescription,
+    primaryCtaText: input.primaryCtaText,
+    secondaryCtaText: input.secondaryCtaText,
+    backgroundImageUrl: input.heroImageUrl,
+  } as HeroConfig);
 
-  if (!hero) return input;
+  const hero: HeroConfig = {
+    ...fallback,
+    headline: fallback.headline || input.heroHeadline,
+    description: fallback.description || input.heroDescription,
+    primaryCtaText: fallback.primaryCtaText || input.primaryCtaText,
+    secondaryCtaText: fallback.secondaryCtaText || input.secondaryCtaText,
+    backgroundImageUrl: fallback.backgroundImageUrl || input.heroImageUrl,
+  };
 
   return {
     ...input,
     hero,
-    heroHeadline: hero.headline ?? input.heroHeadline,
-    heroDescription: hero.description ?? input.heroDescription,
-    primaryCtaText: hero.primaryCtaText ?? input.primaryCtaText,
-    secondaryCtaText: hero.secondaryCtaText ?? input.secondaryCtaText,
+    heroHeadline: hero.headline || input.heroHeadline,
+    heroDescription: hero.description || input.heroDescription,
+    primaryCtaText: hero.primaryCtaText || input.primaryCtaText,
+    secondaryCtaText: hero.secondaryCtaText || input.secondaryCtaText,
   };
 }
