@@ -4,17 +4,6 @@ import { BusinessConfig } from './types/business';
 import { normalizeBusinessConfig } from './lib/config-runtime';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
-import { Stats } from './components/Stats';
-import { About } from './components/About';
-import { Services } from './components/Services';
-import { Pricing } from './components/Pricing';
-import { WhyChooseUs } from './components/WhyChooseUs';
-import { Gallery } from './components/Gallery';
-import { Testimonials } from './components/Testimonials';
-import { Process } from './components/Process';
-import { FAQ } from './components/FAQ';
-import { Location } from './components/Location';
-import { CTA } from './components/CTA';
 import { Footer } from './components/Footer';
 import { WhatsAppButton } from './components/WhatsAppButton';
 import { ScrollToTop } from './components/ScrollToTop';
@@ -23,6 +12,7 @@ import { JsonLdScript } from './components/JsonLdScript';
 import { DevPanel } from './components/DevPanel';
 import { LoadingScreen } from './components/LoadingScreen';
 import { getFontById } from './config/fonts';
+import { WebsiteSections } from './engine/WebsiteSections';
 
 const blurPixels: Record<string, string> = { none: '0px', sm: '2px', md: '4px', lg: '8px' };
 
@@ -32,7 +22,9 @@ function heroGradientValue(hero: BusinessConfig['hero']) {
   if (style === 'custom' && hero?.customGradient) {
     const { from, via, to, direction = 'to-b' } = hero.customGradient;
     const dir: Record<string, string> = { 'to-b': 'to bottom', 'to-br': 'to bottom right', 'to-r': 'to right', 'to-tr': 'to top right' };
-    return direction === 'radial' ? `radial-gradient(circle at 50% 20%, ${from}, ${via ? `${via}, ` : ''}${to})` : `linear-gradient(${dir[direction] || 'to bottom'}, ${from}, ${via ? `${via}, ` : ''}${to})`;
+    return direction === 'radial'
+      ? `radial-gradient(circle at 50% 20%, ${from}, ${via ? `${via}, ` : ''}${to})`
+      : `linear-gradient(${dir[direction] || 'to bottom'}, ${from}, ${via ? `${via}, ` : ''}${to})`;
   }
   const dark = hero?.backgroundMode === 'dark' || style === 'dark-slate' || style === 'ocean-depth';
   switch (style) {
@@ -49,13 +41,12 @@ function heroGradientValue(hero: BusinessConfig['hero']) {
 export default function App() {
   const [business, setBusiness] = useState<BusinessConfig>(businessConfig);
   const [previewRevision, setPreviewRevision] = useState(0);
+  const previewBusiness = normalizeBusinessConfig(business);
 
   const handleBusinessChange = (nextBusiness: BusinessConfig) => {
     setBusiness(nextBusiness);
     if (nextBusiness.id !== business.id) setPreviewRevision(revision => revision + 1);
   };
-
-  const previewBusiness = normalizeBusinessConfig(business);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -81,11 +72,20 @@ export default function App() {
     document.title = previewBusiness.seo?.title || `${previewBusiness.name} - ${previewBusiness.tagline}`;
   }, [previewBusiness]);
 
-  const sections = previewBusiness.sections || { stats: true, about: true, services: true, pricing: true, whyChooseUs: true, gallery: true, testimonials: true, process: true, faq: true, location: true, cta: true };
-  return <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{ backgroundColor: previewBusiness.theme.backgroundColor }}>
-    <LoadingScreen business={previewBusiness} /><JsonLdScript business={previewBusiness} /><DevPanel currentBusiness={business} onSelectBusiness={handleBusinessChange} /><Navbar business={previewBusiness} />
-    <main key={previewRevision} className="grow"><Hero key={previewBusiness.hero?.layoutVariant || 'split'} business={previewBusiness} />
-      {sections.stats !== false && previewBusiness.statistics?.length > 0 && <Stats business={previewBusiness} />} {sections.about !== false && <About business={previewBusiness} />} {sections.services !== false && previewBusiness.services?.length > 0 && <Services business={previewBusiness} />} {sections.pricing !== false && previewBusiness.pricingPackages?.length > 0 && <Pricing business={previewBusiness} />} {sections.whyChooseUs !== false && previewBusiness.whyChooseUs?.length > 0 && <WhyChooseUs business={previewBusiness} />} {sections.gallery !== false && previewBusiness.gallery?.length > 0 && <Gallery business={previewBusiness} />} {sections.testimonials !== false && previewBusiness.testimonials?.length > 0 && <Testimonials business={previewBusiness} />} {sections.process !== false && previewBusiness.process?.length > 0 && <Process business={previewBusiness} />} {sections.faq !== false && previewBusiness.faqs?.length > 0 && <FAQ business={previewBusiness} />} {sections.location !== false && <Location business={previewBusiness} />} {sections.cta !== false && <CTA business={previewBusiness} />}</main>
-    <Footer business={previewBusiness} /><MobileBottomNav business={previewBusiness} /><WhatsAppButton business={previewBusiness} /><ScrollToTop primaryColor={previewBusiness.theme.primaryColor} />
-  </div>;
+  return (
+    <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{ backgroundColor: previewBusiness.theme.backgroundColor }}>
+      <LoadingScreen business={previewBusiness} />
+      <JsonLdScript business={previewBusiness} />
+      <DevPanel currentBusiness={business} onSelectBusiness={handleBusinessChange} />
+      <Navbar business={previewBusiness} />
+      <main key={previewRevision} className="grow">
+        <Hero business={previewBusiness} />
+        <WebsiteSections business={previewBusiness} />
+      </main>
+      <Footer business={previewBusiness} />
+      <MobileBottomNav business={previewBusiness} />
+      <WhatsAppButton business={previewBusiness} />
+      <ScrollToTop primaryColor={previewBusiness.theme.primaryColor} />
+    </div>
+  );
 }
