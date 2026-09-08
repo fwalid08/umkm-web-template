@@ -4,5 +4,4 @@ export { normalizeBusinessInput, isValidIndustryPresetId, isValidTemplateId } fr
 export { WebsiteSections } from './WebsiteSections';
 export { sectionRegistry, defaultSectionOrder, resolveSectionOrder, isSectionEnabled, renderSections } from './section-registry';
 export * from './ai';
-export * from './builder';
-export * from './platform-api';
+export { validateBusinessConfig } from './config-validation';
