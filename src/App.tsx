@@ -19,11 +19,11 @@ import { WhatsAppButton } from './components/WhatsAppButton';
 import { ScrollToTop } from './components/ScrollToTop';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { JsonLdScript } from './components/JsonLdScript';
-import { DevPanelV2 } from './components/DevPanelV2';
+import { DevPanel } from './components/DevPanel';
 import { LoadingScreen } from './components/LoadingScreen';
 import { getFontById } from './config/fonts';
 
-const blurPixels: Record<string,string> = { none:'0px', sm:'4px', md:'12px', lg:'24px' };
+const blurPixels: Record<string,string> = { none:'0px', sm:'2px', md:'4px', lg:'8px' };
 
 export default function App() {
   const [business, setBusiness] = useState<BusinessConfig>(businessConfig);
@@ -38,14 +38,17 @@ export default function App() {
     root.style.setProperty('--color-text', business.theme.textColor);
     root.style.setProperty('--color-text-muted', business.theme.mutedTextColor);
     root.style.setProperty('--border-radius', business.theme.borderRadius);
-    root.style.setProperty('--hero-background-blur', blurPixels[business.hero?.backgroundBlur || 'none'] || '0px');
+    root.style.setProperty('--hero-background-blur', `${business.hero?.backgroundBlurPx ?? Number.parseInt(blurPixels[business.hero?.backgroundBlur || 'none'] || '0', 10)}px`);
+    root.style.setProperty('--hero-background-image-blur', `${business.hero?.backgroundImageBlurPx ?? Number.parseInt(blurPixels[business.hero?.backgroundImageBlur || 'sm'] || '2', 10)}px`);
+    root.style.setProperty('--hero-overlay-image', business.hero?.backgroundOverlayImageUrl ? `url("${business.hero.backgroundOverlayImageUrl}")` : 'none');
+    root.style.setProperty('--hero-overlay-image-opacity', String(business.hero?.backgroundOverlayImageOpacity ?? .28));
     const font = getFontById(business.theme.fontOptionId);
     root.style.setProperty('--font-family', business.theme.fontFamily || font.family);
     document.title = business.seo?.title || `${business.name} - ${business.tagline}`;
   }, [business]);
-  const sections = business.sections || { stats:true, about:true, services:true, pricing:true, gallery:true, testimonials:true, process:true, faq:true, location:true, cta:true };
+  const sections = business.sections || { stats:true, about:true, services:true, pricing:true, whyChooseUs:true, gallery:true, testimonials:true, process:true, faq:true, location:true, cta:true };
   return <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{backgroundColor:business.theme.backgroundColor}}>
-    <LoadingScreen business={business} /><JsonLdScript business={business}/><DevPanelV2 currentBusiness={business} onSelectBusiness={setBusiness}/><Navbar business={business}/>
+    <LoadingScreen business={business} /><JsonLdScript business={business}/><DevPanel currentBusiness={business} onSelectBusiness={setBusiness}/><Navbar business={business}/>
     <main className="grow"><Hero key={business.hero?.layoutVariant || 'split'} business={business}/>
       {sections.stats !== false && business.statistics?.length > 0 && <Stats business={business}/>} {sections.about !== false && <About business={business}/>} {sections.services !== false && business.services?.length > 0 && <Services business={business}/>} {sections.pricing !== false && business.pricingPackages?.length > 0 && <Pricing business={business}/>} {sections.whyChooseUs !== false && business.whyChooseUs?.length > 0 && <WhyChooseUs business={business}/>} {sections.gallery !== false && business.gallery?.length > 0 && <Gallery business={business}/>} {sections.testimonials !== false && business.testimonials?.length > 0 && <Testimonials business={business}/>} {sections.process !== false && business.process?.length > 0 && <Process business={business}/>} {sections.faq !== false && business.faqs?.length > 0 && <FAQ business={business}/>} {sections.location !== false && <Location business={business}/>} {sections.cta !== false && <CTA business={business}/>}</main>
     <Footer business={business}/><MobileBottomNav business={business}/><WhatsAppButton business={business}/><ScrollToTop primaryColor={business.theme.primaryColor}/>
