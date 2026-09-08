@@ -1,9 +1,42 @@
 import React from 'react';
-import type { LucideIcon } from 'lucide-react';
-import type { ConfigEditorGroup, ConfigEditorTab } from '../../config/schema';
+import {
+  BriefcaseBusiness,
+  FileText,
+  HelpCircle,
+  Image as ImageIcon,
+  LayoutTemplate,
+  MapPin,
+  Menu,
+  MessageCircle,
+  Palette,
+  Search,
+  type LucideIcon,
+} from 'lucide-react';
+import type { ConfigEditorSection, ConfigEditorTab } from '../../config/schema';
+
+export interface ConfigSidebarGroup {
+  id: 'brand' | 'content';
+  title: string;
+  items: ConfigEditorSection[];
+}
+
+const icons: Record<ConfigEditorTab, LucideIcon> = {
+  business: BriefcaseBusiness,
+  theme: Palette,
+  navigation: Menu,
+  hero: LayoutTemplate,
+  seo: Search,
+  services: BriefcaseBusiness,
+  testimonials: MessageCircle,
+  gallery: ImageIcon,
+  faq: HelpCircle,
+  location: MapPin,
+  cta: MessageCircle,
+  footer: FileText,
+};
 
 export interface ConfigSidebarProps {
-  groups: ConfigEditorGroup[];
+  groups: ConfigSidebarGroup[];
   activeTab: ConfigEditorTab;
   onTabChange: (tab: ConfigEditorTab) => void;
   onReset: () => void;
@@ -24,7 +57,7 @@ export const ConfigSidebar: React.FC<ConfigSidebarProps> = ({
       <div key={group.id} className="mb-5">
         <p className="dev-panel-group-title">{group.title}</p>
         {group.items.map((item) => {
-          const Icon = item.icon as LucideIcon;
+          const Icon = icons[item.id];
           return (
             <button
               key={item.id}
