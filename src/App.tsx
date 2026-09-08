@@ -14,6 +14,7 @@ import { DevPanel } from './components/DevPanel';
 import { LoadingScreen } from './components/LoadingScreen';
 import { getFontById } from './config/fonts';
 import { WebsiteSections } from './engine/WebsiteSections';
+import { WebsiteStudio } from './components/WebsiteStudio';
 
 const blurPixels: Record<string, string> = { none: '0px', sm: '2px', md: '4px', lg: '8px' };
 
@@ -23,9 +24,7 @@ function heroGradientValue(hero: BusinessConfig['hero']) {
   if (style === 'custom' && hero?.customGradient) {
     const { from, via, to, direction = 'to-b' } = hero.customGradient;
     const dir: Record<string, string> = { 'to-b': 'to bottom', 'to-br': 'to bottom right', 'to-r': 'to right', 'to-tr': 'to top right' };
-    return direction === 'radial'
-      ? `radial-gradient(circle at 50% 20%, ${from}, ${via ? `${via}, ` : ''}${to})`
-      : `linear-gradient(${dir[direction] || 'to bottom'}, ${from}, ${via ? `${via}, ` : ''}${to})`;
+    return direction === 'radial' ? `radial-gradient(circle at 50% 20%, ${from}, ${via ? `${via}, ` : ''}${to})` : `linear-gradient(${dir[direction] || 'to bottom'}, ${from}, ${via ? `${via}, ` : ''}${to})`;
   }
   const dark = hero?.backgroundMode === 'dark' || style === 'dark-slate' || style === 'ocean-depth';
   switch (style) {
@@ -43,6 +42,7 @@ export default function App() {
   const [business, setBusiness] = useState<BusinessConfig>(businessConfig);
   const [previewRevision, setPreviewRevision] = useState(0);
   const previewBusiness = normalizeBusinessConfig(business);
+  const studio = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('studio');
 
   const handleBusinessChange = (nextBusiness: BusinessConfig) => {
     setBusiness(nextBusiness);
@@ -51,10 +51,7 @@ export default function App() {
 
   useEffect(() => {
     const validation = validateBusinessConfig(previewBusiness);
-    if (import.meta.env.DEV && !validation.valid) {
-      console.warn('[UMKM Engine] Invalid business config:', validation.issues);
-    }
-
+    if (import.meta.env.DEV && !validation.valid) console.warn('[UMKM Engine] Invalid business config:', validation.issues);
     const root = document.documentElement;
     root.style.setProperty('--color-primary', previewBusiness.theme.primaryColor);
     root.style.setProperty('--color-primary-hover', previewBusiness.theme.primaryHover);
@@ -77,6 +74,8 @@ export default function App() {
     root.style.setProperty('--font-family', previewBusiness.theme.fontFamily || font.family);
     document.title = previewBusiness.seo?.title || `${previewBusiness.name} - ${previewBusiness.tagline}`;
   }, [previewBusiness]);
+
+  if (studio) return <WebsiteStudio onClose={() => { window.history.replaceState({}, '', window.location.pathname); window.location.reload(); }} />;
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-slate-900 selection:text-white pb-16 md:pb-0" style={{ backgroundColor: previewBusiness.theme.backgroundColor }}>
